@@ -188,7 +188,7 @@ def write_readme(arts: list[dict]) -> None:
     lines.append("## 如何阅读")
     lines.append("")
     lines.append("- 推荐打开静态首页：[docs/index.html](docs/index.html)。页面按发表时间从新到旧列出全部文章，可用公司、分类、标签筛选，也可按标题与摘要全文搜索；点击卡片进入阅读页，可看到日期、公司、类型徽标、标签与原文链接。")
-    lines.append("- 本地预览：在 `docs/` 目录运行 `python3 -m http.server 8000`，然后访问 `http://127.0.0.1:8000/`。站点全部使用相对路径，也可部署到 GitHub Pages 的 `/anthropic-agent-articles-zh/` 子路径（本仓库当前未启用 Pages）。")
+    lines.append("- 本地预览：在 `docs/` 目录运行 `python3 -m http.server 8000`，然后访问 `http://127.0.0.1:8000/`。站点全部使用相对路径，也可部署到 GitHub Pages 的 `/ai-agent-articles-zh/` 子路径（本仓库当前未启用 Pages）。")
     lines.append("- 单篇 Markdown 位于 [`articles/<company>/`](articles/)，文件名以序号开头，使同一公司目录在 GitHub 上按从新到旧排列。")
     lines.append("- 机器可读目录由 [`scripts/build.py`](scripts/build.py) 从 YAML 页眉生成，写入 [`data/articles.json`](data/articles.json)（构建时同步到 `docs/data/articles.json`），并同时更新本 README 与站点。")
     lines.append("")
@@ -251,7 +251,7 @@ def write_readme(arts: list[dict]) -> None:
     lines.append("")
     lines.append("如需引用或核对，一律以各公司官方页面为准。")
     lines.append("")
-    lines.append("仓库名称仍为历史沿用的 `anthropic-agent-articles-zh`；内容已扩展为多公司文库。若需更名，可考虑 `ai-agent-articles-zh` 或 `agent-dev-articles-zh`（需仓库所有者另行决定，本构建脚本不会改名或改可见性）。")
+    lines.append("仓库名称仍为历史沿用的 `ai-agent-articles-zh`；内容已扩展为多公司文库。若需更名，可考虑 `ai-agent-articles-zh` 或 `agent-dev-articles-zh`（需仓库所有者另行决定，本构建脚本不会改名或改可见性）。")
     lines.append("")
     README.write_text("\n".join(lines), encoding="utf-8")
 
