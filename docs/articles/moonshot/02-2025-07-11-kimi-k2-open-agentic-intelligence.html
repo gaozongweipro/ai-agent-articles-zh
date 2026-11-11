@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kimi K2：开放的智能体智能 · 月之暗面 Kimi</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">月之暗面 Kimi</span>
+        <time datetime="2025-07-11">2025-07-11</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">模型与发布</span>
+      </p>
+      <h1>Kimi K2：开放的智能体智能</h1>
+      <p class="en-title">Kimi K2: Open Agentic Intelligence</p>
+      <p class="updated">更新日期：2025-09-05</p>
+      <p class="orig">原文：<a href="https://www.kimi.ai/blog/kimi-k2" target="_blank" rel="noopener">https://www.kimi.ai/blog/kimi-k2</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=工具调用">工具调用</a><a class="chip" href="../../index.html?tag=编码 Agent">编码 Agent</a><a class="chip" href="../../index.html?tag=MCP">MCP</a><a class="chip" href="../../index.html?tag=Agent 训练">Agent 训练</a><a class="chip" href="../../index.html?tag=模型发布">模型发布</a></p>
+    </header>
+    <div class="body"><h1 id="kimi-k2">Kimi K2：开放的智能体智能</h1>
+<p>更新（0905）：我们发布了增强智能体式编程、并支持 256K 上下文的更新权重，详见<a href="https://platform.kimi.com/blog/posts/kimi-k2-0905">官方 0905 说明</a>。（官方平台博文确认 Kimi K2 最初发布于 2025 年 7 月 11 日。）</p>
+<p>Kimi K2 是我们最新的混合专家模型，激活参数 320 亿，总参数 1 万亿。它在非思考模型中，于前沿知识、数学和编程上达到领先水平。但它走得更远——经过对智能体任务的细致优化，Kimi K2 不只是回答，它会行动。</p>
+<p>现在，它已触手可及。今天我们开源：</p>
+<ul>
+<li>Kimi-K2-Base：基础模型，适合希望完全掌控微调与定制方案的研究者和构建者。</li>
+<li>Kimi-K2-Instruct：经过后训练、最适合作为通用对话与智能体体验即插即用的模型。它是不进行长思考的 reflex-grade 模型。</li>
+</ul>
+<p>有了 Kimi K2，先进的智能体智能比以往更加开放、可及。我们迫不及待想看到你的构建。</p>
+<h3 id="_1">用例</h3>
+<p>把工具交给 Kimi K2 并描述任务。</p>
+<p>它会自动理解如何使用这些工具并完成工作。你不必为智能体应用编写复杂的工作流。</p>
+<p>可以想象用 Kimi K2 和薪资数据分析示例探索远程工作薪资——其中 16 次 IPython 调用生成统计、可视化以及交互式洞察网页。深入 Stanford NLP Genealogy，让 Kimi K2 通过 5 次网络搜索、4 次浏览、3 次点击、5 次滚动、6 次编辑和 2 次部署，生成一个交互式站点。或者用 Kimi K2 规划 2025 年伦敦 Coldplay 巡演之旅：它通过 17 次顺畅的工具调用（搜索、日历、Gmail、航班、Airbnb 与餐厅预订）为你制定计划。</p>
+<p>把 Kimi K2 带到命令行。它会编辑文件，运行命令。</p>
+<p>Kimi K2 理解你的环境，决定采取什么动作，并无缝执行。</p>
+<p>为清晰起见，终端只显示每条轨迹的摘要。在每个例子中，Kimi K2 在背后编排多种工具与命令以完成复杂目标。例如，它可以自动化 JavaScript 版 Minecraft 开发：管理渲染、运行并调试测试用例、在失败时捕获日志，并迭代改进代码直到全部测试通过。对于 pre/post norm 分析，Kimi K2 使用 Weights &amp; Biases（wandb）数据读取器从语言模型实验中提取洞察，并生成精致的分析报告。在把 Flask 项目转换为 Rust 时，Kimi K2 系统地重构代码库并运行性能基准，以确保结果稳健。</p>
+<h3 id="_2">开放的智能体智能</h3>
+<p>预训练是智能体智能的关键基础，它建立的先验使强化学习（RL）探索变得可进行、有效率且可泛化。然而，正如 Ilya Sutskever 也观察到的，人类数据是有限的「化石燃料」，其增长远远落后于算力步伐。这使预训练期间的 token 效率，成为 AI 扩展定律中一个新的关键系数。</p>
+<p>后训练在「经验时代」（David Silver, Richard Sutton, 2025）中至关重要。在这个时代，LLM 越来越多地从自己生成的交互中学习，获得使它们摆脱人类数据限制、并有可能超越人类能力的奖励。</p>
+<p>Kimi K2 正是在这些洞察上锻造而成。</p>
+<h4 id="muonclip">MuonClip 优化器</h4>
+<p>在不追求绝对严谨的表述下：给定近似有限的预训练数据集和固定的模型配置，更 token 高效的优化器能产生更多智能。我们此前的工作 Moonlight 已表明，Muon 优化器在 LLM 训练上显著优于广泛使用的 AdamW。</p>
+<p>Kimi K2 被设计为进一步扩展 Moonlight，其架构与 DeepSeek-V3 类似。基于扩展定律分析，我们减少注意力头数以提高长上下文效率，并增加 MoE 稀疏性以提高 token 效率。在扩大规模时，我们遇到一个持续挑战：注意力 logits 爆炸导致的训练不稳定——在我们的实验中，这一问题在 Muon 上比 AdamW 更频繁。现有方案如 logit soft-capping 与 query-key normalization 被发现并不充分。</p>
+<p>为此，我们引入 MuonClip 优化器，用所提出的 qk-clip 技术改进 Muon。具体而言，qk-clip 在 Muon 更新之后直接缩放 query 与 key 投影的权重矩阵，从而在源头控制注意力 logits 的尺度。Query 与 key 投影按如下方式缩放：</p>
+<p>(q_i = \eta^{\alpha} W_q x_i)</p>
+<p>(k_i = \eta^{1-\alpha} W_k x_i)</p>
+<p>其中 (\alpha) 是平衡超参数，于是注意力 logit 变为：</p>
+<p>((\eta^{\alpha} q_i)^{\top} (\eta^{1-\alpha} k_j) = \eta\, q_i^{\top} k_j)</p>
+<p>自适应因子 (\eta)（带阈值 (t)）在每一步之后，根据该步中的最大注意力 logit 设定：</p>
+<p>(\eta = \min(\frac{t}{\max_{i,j}(q_i^{\top} k_j)}, 1))</p>
+<p>其中 (t) 是预设阈值。这是一种一般技术，也可能用于其他稳定性场景。</p>
+<p>实验表明，MuonClip 能有效防止 logit 爆炸，同时保持下游任务表现。实践中，Kimi K2 使用 MuonClip 在 15.5T tokens 上预训练且没有训练 spike，表明它是稳定、大规模 LLM 训练的稳健方案。</p>
+<h4 id="_3">智能体能力</h4>
+<p>Kimi K2 增强的智能体能力源于两个方面——大规模智能体数据合成，以及通用强化学习。</p>
+<p>面向工具使用学习的大规模智能体数据合成：为了教会模型复杂的工具使用能力，我们开发了一套受 ACEBench 启发的综合流水线，以大规模模拟真实世界的工具使用场景。我们的方法系统地演化出包含数千种工具的数百个领域——既包括真实的 MCP（Model Context Protocol）工具，也包括合成工具——然后生成配备多样化工具集的数百个智能体。</p>
+<p>所有任务都基于评分标准（rubric），以便一致评估。智能体与模拟环境及用户智能体交互，形成真实的多轮工具使用场景。LLM judge 根据任务评分标准评估模拟结果，过滤出高质量训练数据。这条可扩展流水线生成多样、高质量的数据，为大规模拒绝采样和强化学习铺平道路。</p>
+<p>通用强化学习：关键挑战是把 RL 同时应用于可验证与不可验证奖励的任务；可验证任务的典型例子是数学和竞赛编程，而撰写研究报告通常被视为不可验证。超越可验证奖励，我们的通用 RL 系统使用一种自我评判机制，让模型充当自己的评论者，为不可验证任务提供可扩展的、基于评分标准的反馈。</p>
+<p>与此同时，带可验证奖励的 on-policy rollout 被用来持续更新评论者，使其在最新策略上不断提高评估准确性。这可以看作用可验证奖励来改进对不可验证奖励的估计。</p>
+<h3 id="kimi-k2_1">开始使用 Kimi K2</h3>
+<h4 id="kimiai">在 kimi.ai 上试用</h4>
+<p>从今天起，网页和移动端的 Kimi 用户可以免费选择并使用新的 Kimi K2 模型。此刻，网页与 App 的 MCP 功能仍在开发中，我们希望在随后数周开始推出。与此同时，欢迎试用 Researcher，以提前感受其智能体能力。请注意 Kimi K2 尚不支持视觉功能。</p>
+<h4 id="api">通过 API 使用</h4>
+<p>Kimi 平台提供与 OpenAI / Anthropic 兼容的接口，便于把现有应用适配到 Kimi K2。我们鼓励开发者探索工具调用 API 以构建智能体应用。详情见 platform.kimi.ai。</p>
+<h4 id="_4">自行部署</h4>
+<p>我们建议在以下推理引擎之一上运行 Kimi K2：vLLM、SGLang、KTransformers 或 TensorRT-LLM。详细部署说明见我们的 GitHub 仓库。</p>
+<h4 id="_5">下一步</h4>
+<p>虽然 Kimi K2 为开放的智能体智能提供了坚实基础，通用智能体还需要思考与视觉理解等更先进能力。我们计划在未来把这些加入 Kimi K2。</p>
+<h4 id="_6">局限</h4>
+<p>在内部测试中，我们识别出当前 Kimi K2 模型的一些局限。在处理困难推理任务或工具定义不清晰时，模型可能生成过多 tokens，有时导致输出被截断或不完整的工具调用。此外，在启用工具使用时，某些任务上的表现可能下降。在构建完整软件项目时，一次性提示的表现会比在智能体框架下使用 K2 更差。我们正在后续版本中解决这些问题，并期待更多反馈。</p>
+<p>（原文随后给出详细基准表，比较 Kimi-K2-Instruct 与 DeepSeek-V3、Qwen3、Claude 4、GPT-4.1、Gemini 2.5 Flash 等在编程、工具使用、数学与通用任务上的结果，例如 SWE-bench Verified 智能体式编程单次尝试 65.8%、多次尝试 71.6%，以及 Tau2、AceBench 等。完整数字与脚注请以<a href="https://www.kimi.ai/blog/kimi-k2">原文表格</a>为准。）</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

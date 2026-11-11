@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用 Mistral Agents API 构建 AI 智能体 · Mistral</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">Mistral</span>
+        <time datetime="2025-05-27">2025-05-27</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">框架与 SDK</span>
+      </p>
+      <h1>用 Mistral Agents API 构建 AI 智能体</h1>
+      <p class="en-title">Build AI agents with the Mistral Agents API</p>
+      
+      <p class="orig">原文：<a href="https://mistral.ai/news/agents-api/" target="_blank" rel="noopener">https://mistral.ai/news/agents-api/</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=Agents SDK">Agents SDK</a><a class="chip" href="../../index.html?tag=MCP">MCP</a><a class="chip" href="../../index.html?tag=多 Agent">多 Agent</a><a class="chip" href="../../index.html?tag=记忆">记忆</a><a class="chip" href="../../index.html?tag=工具调用">工具调用</a></p>
+    </header>
+    <div class="body"><h1 id="mistral-agents-api-ai">用 Mistral Agents API 构建 AI 智能体</h1>
+<p>今天我们宣布推出新的 Agents API，这是让 AI 更有能力、更有用、并真正成为主动问题解决者的重要一步。</p>
+<p>传统语言模型擅长生成文本，但在执行动作或保持上下文方面能力有限。新的 Agents API 通过把 Mistral 强大的语言模型与以下能力结合，来弥补这些限制：</p>
+<ul>
+<li>内置连接器，用于代码执行、网络搜索、图像生成以及 MCP 工具</li>
+<li>跨对话的持久记忆</li>
+<li>智能体编排能力</li>
+</ul>
+<p>Agents API 与 Chat Completion API 互为补充，提供专门用于简化智能体用例实现的框架，并可作为企业级智能体平台的骨干。</p>
+<p>通过为 AI 智能体提供处理复杂任务、保持上下文并协调多种动作的可靠框架，Agents API 让企业能以更切实、更有影响力的方式使用 AI。</p>
+<h2 id="mistral">Mistral 智能体实践</h2>
+<p>可在多个领域探索 Mistral Agents API 的应用：</p>
+<h3 id="github">与 GitHub 配合的编程助手</h3>
+<p>用 Mistral Agents API 构建的智能体工作流：一个智能体与 GitHub 交互，并监督由 DevStral 驱动的开发者智能体来写代码。该智能体被授予对 GitHub 的充分权限，以展示自动化软件开发任务管理。</p>
+<h3 id="linear">Linear 工单助手</h3>
+<p>由 Agents API 驱动的智能任务协调助手，采用多服务器 MCP 架构，把通话记录转化为 PRD 再变成可执行的 Linear issue，并跟踪项目交付物。</p>
+<h3 id="_1">金融分析师</h3>
+<p>用 Agents API 构建的财务顾问智能体，编排多个 MCP 服务器以获取财务指标、汇总洞察，并安全地归档结果。</p>
+<h3 id="_2">旅行助手</h3>
+<p>帮助用户规划行程、预订住宿并管理旅行需求的 AI 旅行助手。</p>
+<h3 id="_3">营养助手</h3>
+<p>AI 饮食伴侣，帮助用户设定目标、记录膳食、获得个性化食物建议、跟踪每日完成情况，并发现符合营养目标的用餐选择。</p>
+<h2 id="mcp">用内置连接器与 MCP 工具创建智能体</h2>
+<p>每个智能体都可以配备强大的内置连接器（已部署、可按需调用的工具）以及 MCP 工具：</p>
+<h3 id="_4">代码执行</h3>
+<p>Agents API 可以使用代码执行连接器，让开发者创建能在安全沙箱中执行 Python 代码的智能体。这使智能体能处理数学计算与分析、数据可视化与绘图，以及科学计算等任务。</p>
+<h3 id="_5">图像生成</h3>
+<p>由 Black Forest Lab FLUX1.1 [pro] Ultra 驱动的图像生成连接器，使智能体能在多种应用中创建图像，例如为教育内容生成视觉辅助、为营销材料制作定制图形，或生成艺术图像。</p>
+<h3 id="_6">文档库</h3>
+<p>Document Library 是内置连接器，使智能体可以访问 Mistral Cloud 中的文档。它支撑集成的 RAG 功能，借助用户上传的文档内容增强智能体的知识。</p>
+<h3 id="_7">网络搜索</h3>
+<p>Agents API 提供网络搜索连接器，让开发者把 Mistral 模型与来自网络、可靠新闻及其他来源的多样、及时信息结合起来，从而给出有依据的、更新的回答。具备网络搜索的智能体表现有显著提升。在 SimpleQA 基准上，Mistral Large 与 Mistral Medium 配合网络搜索分别达到 75% 与 82.32%，而不使用搜索时为 23% 与 22.08%（见原文图表）。</p>
+<h3 id="mcp_1">MCP 工具</h3>
+<p>Agents API SDK 也可以使用基于 Model Context Protocol（MCP）构建的工具——这是一个开放的标准化协议，用于实现智能体与外部系统的无缝集成。MCP 工具为智能体访问现实世界上下文（包括 API、数据库、用户数据、文档及其他动态资源）提供了灵活、可扩展的接口。可参考 GitHub、金融分析师和 Linear 的 MCP 演示，了解如何在 Mistral Agents 中使用 MCP 工具。</p>
+<h2 id="_8">带状态对话中的记忆与上下文</h2>
+<p>Agents API 通过灵活且有状态的对话系统提供稳健的会话管理。每次对话都保留其上下文，从而随时间保持连贯交互。</p>
+<h3 id="_9">对话管理</h3>
+<p>有两种方式开始对话。每次对话通过 conversation entries 维护结构化历史，确保上下文在交互中得以保留。</p>
+<ol>
+<li>使用 Agent：用特定的 <code>agent_id</code> 创建对话，以利用其专项能力。</li>
+<li>直接访问：通过直接指定模型和 completion 参数开始对话，快速使用内置连接器。</li>
+</ol>
+<h3 id="_10">有状态交互与对话分支</h3>
+<p>开发者不必再自行跟踪对话历史；他们可以查看过去的对话，随时继续任何对话，或从任意时间点开辟新的对话路径。</p>
+<h3 id="_11">流式输出</h3>
+<p>API 在开始对话和继续先前对话时都支持流式输出，从而实现实时更新与交互。</p>
+<h2 id="_12">智能体编排</h2>
+<p>Agents API 的真正力量在于编排多个智能体以解决复杂问题。通过动态编排，可以根据需要在对话中添加或移除智能体——每一个都贡献其独特能力，处理问题的不同部分。</p>
+<h3 id="_13">创建智能体工作流</h3>
+<p>要构建带 handoff 的工作流，先创建所有必要的智能体。你可以根据需要创建任意数量的智能体，每个配备特定工具与模型，形成定制工作流。</p>
+<h3 id="handoffs">智能体交接（handoffs）</h3>
+<p>智能体创建完成后，定义哪些智能体可以把任务交接给其他智能体。例如，金融智能体可以根据对话需要，把任务委托给网络搜索智能体或计算器智能体。Handoffs 使动作链变得顺畅。一次请求可以触发跨多个智能体的任务，各自处理请求的特定部分。这种协作方式能够高效解决问题，为现实应用打开强大的可能性。</p>
+<h2 id="_14">开始使用</h2>
+<p>请通过 Mistral 官方文档与控制台开始使用 Agents API。后续官方文档提示：该 Agents API 后来有迁移/演进路径（例如转向 Agents SDK），请以现行 <a href="https://docs.mistral.ai/">Mistral Docs</a> 为准。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

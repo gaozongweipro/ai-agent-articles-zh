@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AlphaEvolve：由 Gemini 驱动的、用于设计先进算法的编码智能体 · Google / DeepMind</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">Google / DeepMind</span>
+        <time datetime="2025-05-14">2025-05-14</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">编码 Agent</span>
+      </p>
+      <h1>AlphaEvolve：由 Gemini 驱动的、用于设计先进算法的编码智能体</h1>
+      <p class="en-title">AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms</p>
+      
+      <p class="orig">原文：<a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" target="_blank" rel="noopener">https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=编码 Agent">编码 Agent</a><a class="chip" href="../../index.html?tag=Gemini">Gemini</a><a class="chip" href="../../index.html?tag=评测">评测</a><a class="chip" href="../../index.html?tag=科研 Agent">科研 Agent</a><a class="chip" href="../../index.html?tag=算法发现">算法发现</a></p>
+    </header>
+    <div class="body"><h1 id="alphaevolve-gemini">AlphaEvolve：由 Gemini 驱动的、用于设计先进算法的编码智能体</h1>
+<p>AlphaEvolve 团队</p>
+<p>新的 AI 智能体通过把大语言模型的创造力与自动评估器结合起来，演化用于数学和计算实际应用的算法。</p>
+<p>大语言模型（LLM）非常多才多艺。它们可以总结文档、生成代码，甚至头脑风暴新想法。现在我们把这些能力扩展到针对数学和现代计算中的根本性、高度复杂的问题。</p>
+<p>今天，我们宣布 AlphaEvolve，一个由大语言模型驱动的、用于通用算法发现与优化的演化编码智能体。AlphaEvolve 把我们 Gemini 模型的创造性问题解决能力与验证答案的自动评估器配对，并使用演化框架来改进最有前景的想法。</p>
+<p>AlphaEvolve 提高了 Google 数据中心、芯片设计和 AI 训练过程的效率——包括训练支撑 AlphaEvolve 自身的大语言模型。它还帮助设计了更快的矩阵乘法算法，并找到了开放数学问题的新解，显示出跨许多领域应用的巨大潜力。</p>
+<h2 id="_1">用大语言模型设计更好的算法</h2>
+<p>2023 年，我们首次表明大语言模型可以生成用计算机代码书写的函数，以帮助在一个开放科学问题上发现新的、可证明正确的知识。AlphaEvolve 是一个可以超越单一函数发现、演化整个代码库并开发更为复杂算法的智能体。</p>
+<p>AlphaEvolve 利用一组最先进的大语言模型：我们最快、最高效的模型 Gemini Flash，最大化所探索想法的广度；而我们最强大的模型 Gemini Pro，以有洞察力的建议提供关键深度。这些模型一起提出实现算法解决方案的计算机程序，以代码形式呈现。</p>
+<p>（原文配图：提示采样器先为语言模型组装提示，模型生成新程序；这些程序由评估器评估并存储在程序数据库中。该数据库实现一个演化算法，决定哪些程序将用于未来的提示。）</p>
+<p>AlphaEvolve 使用自动评估指标来验证、运行并给所提出的程序打分。这些指标对每个解决方案的准确性和质量提供客观、可量化的评估。这使 AlphaEvolve 在数学和计算机科学等进步可以被清晰、系统地衡量的广泛领域中特别有帮助。</p>
+<h3 id="_2">优化我们的计算生态</h3>
+<p>在过去一年中，我们已在 Google 的计算生态中部署了由 AlphaEvolve 发现的算法，包括我们的数据中心、硬件和软件。这些改进中每一项的影响，都会在我们的 AI 与计算基础设施中倍增，从而为所有用户构建更强大、更可持续的数字生态。</p>
+<h3 id="_3">改进数据中心调度</h3>
+<p>AlphaEvolve 发现了一个简单却非常有效的启发式方法，帮助 Borg 更高效地编排 Google 庞大的数据中心。该方案现已在生产中运行超过一年，平均持续回收 Google 全球计算资源的 0.7%。这一持续的效率提升意味着，在任何给定时刻，可以在相同的计算占用上完成更多任务。AlphaEvolve 的方案不仅带来强性能，还提供人类可读代码的显著运营优势：可解释性、可调试性、可预测性以及易于部署。</p>
+<h3 id="_4">协助硬件设计</h3>
+<p>AlphaEvolve 提出了一项 Verilog 改写，去掉了矩阵乘法关键、高度优化的算术电路中不必要的比特。至关重要的是，该提案必须通过稳健的验证方法，以确认修改后的电路保持功能正确性。该提案已被集成进即将推出的 Tensor Processing Unit（TPU），即 Google 的定制 AI 加速器。通过用芯片设计师的标准语言提出修改，AlphaEvolve 促进 AI 与硬件工程师之间的协作方法，以加速未来专用芯片的设计。</p>
+<h3 id="ai">增强 AI 训练与推理</h3>
+<p>AlphaEvolve 正在加速 AI 性能和研究速度。通过找到把大型矩阵乘法运算划分成更可管理子问题的更聪明方法，它把 Gemini 架构中这一关键 kernel 加快了 23%，从而使 Gemini 的训练时间减少 1%。因为开发生成式 AI 模型需要大量计算资源，每一项效率收益都转化为可观节省。除性能收益外，AlphaEvolve 显著减少了 kernel 优化所需的工程时间，从数周的专家努力变为数日的自动实验，让研究者能更快创新。</p>
+<p>AlphaEvolve 也可以优化底层 GPU 指令。这一极其复杂的领域通常已被编译器高度优化，因此人类工程师通常不会直接修改它。AlphaEvolve 为基于 Transformer 的 AI 模型中的 FlashAttention kernel 实现取得了最高 32.5% 的加速。这类优化帮助专家定位性能瓶颈，并轻松把改进纳入代码库，提高他们的生产力，并带来未来在计算和能源上的节省。</p>
+<h3 id="_5">推进数学与算法发现的前沿</h3>
+<p>AlphaEvolve 还可以为复杂数学问题提出新方法。在为计算机程序提供最小代码骨架的情况下，AlphaEvolve 设计了一种新颖的基于梯度的优化过程的许多组件，该过程发现了矩阵乘法这一计算机科学基本问题的多种新算法。</p>
+<p>（原文视频/列表展示了 AlphaEvolve 为发现更快矩阵乘法算法而提出的变更，涵盖优化器与权重初始化、损失函数和超参数扫描等，这些变更高度非平凡，在演化过程中需要 15 次突变。）</p>
+<p>AlphaEvolve 的过程找到了一种用 48 次标量乘法来乘 4×4 复值矩阵的算法，改进了此前在该设置中已知最佳的 Strassen 1969 算法。这一发现相对我们先前专门研究矩阵乘法算法的 AlphaTensor 是一次显著进展；对 4×4 矩阵，AlphaTensor 仅在二元算术上找到了改进。</p>
+<p>为考察 AlphaEvolve 的广度，我们把该系统应用于数学分析、几何、组合学和数论中的 50 多个开放问题。系统的灵活性使我们能在数小时内设置大多数实验。在大约 75% 的情况下，据我们所知，它重新发现了当时最先进的解。</p>
+<p>在 20% 的情况下，AlphaEvolve 改进了此前已知的最佳解，在相应的开放问题上取得进展。例如，它推进了接吻数问题（kissing number problem）。这一几何挑战让数学家着迷了 300 多年，关注与一个公共单位球面相切的、互不重叠的球面的最大数目。AlphaEvolve 发现了 593 个外球面的构型，并在 11 维中建立了新的下界。</p>
+<h3 id="_6">前进之路</h3>
+<p>AlphaEvolve 展示了从为特定领域发现算法，到为广泛的真实世界挑战开发更复杂算法的进展。我们预期 AlphaEvolve 将随着大语言模型能力——尤其是它们在编程上变得更好——继续改进。</p>
+<p>我们与 People + AI Research 团队一起，一直在构建用于与 AlphaEvolve 交互的友好用户界面。我们正计划为选定的学术用户提供 Early Access Program，也在探索让 AlphaEvolve 更广泛可用的可能性。要登记兴趣，请填写原文中的表单。</p>
+<p>虽然 AlphaEvolve 目前被应用于数学和计算，其一般性质意味着它可被应用于任何解决方案可以被描述为算法、并被自动验证的问题。我们相信 AlphaEvolve 可以在材料科学、药物发现、可持续性以及更广泛的技术和商业应用等更多领域具有变革性。</p>
+<p>（完整致谢名单与白皮书详见原文。）</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

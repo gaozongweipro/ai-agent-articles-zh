@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent 开发文章文库（中文整理）</title>
+<link rel="stylesheet" href="styles.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>AI Agent 开发文章文库</h1>
+    <p>整理 Anthropic、OpenAI、Google / DeepMind、DeepSeek 等公司官方发布的 Agent 开发文章，附中文翻译或摘要。按时间从新到旧排列，可用公司、分类与标签筛选。</p>
+  </header>
+  <div class="toolbar">
+    <input class="search" id="q" type="search" placeholder="搜索标题或摘要…" autocomplete="off">
+    <select class="filter" id="company"><option value="">全部公司</option></select>
+    <select class="filter" id="category"><option value="">全部分类</option></select>
+    <button class="theme-toggle" id="theme-toggle" type="button" onclick="toggleTheme()">深色</button>
+  </div>
+  <div class="chips" id="tag-bar"></div>
+  <p class="stats" id="stats"></p>
+  <div class="list" id="list"></div>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  let data = null;
+  let activeTag = params.get("tag") || "";
+
+  function applyParamsToControls() {
+    if (params.get("company")) $("company").value = params.get("company");
+    if (params.get("category")) $("category").value = params.get("category");
+    if (params.get("q")) $("q").value = params.get("q");
+  }
+
+  function writeParams() {
+    const p = new URLSearchParams();
+    if ($("company").value) p.set("company", $("company").value);
+    if ($("category").value) p.set("category", $("category").value);
+    if (activeTag) p.set("tag", activeTag);
+    if ($("q").value.trim()) p.set("q", $("q").value.trim());
+    const qs = p.toString();
+    history.replaceState(null, "", qs ? ("?" + qs) : location.pathname);
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function render() {
+    if (!data) return;
+    const company = $("company").value;
+    const category = $("category").value;
+    const q = $("q").value.trim().toLowerCase();
+    const items = data.articles.filter((a) => {
+      if (company && a.company !== company) return false;
+      if (category && a.category !== category) return false;
+      if (activeTag && !(a.tags || []).includes(activeTag)) return false;
+      if (q) {
+        const hay = [a.title_en, a.title_zh, a.excerpt, (a.tags || []).join(" "), a.company_zh, a.category].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    $("stats").textContent = "显示 " + items.length + " / " + data.articles.length + " 篇（全文翻译 " + data.counts.full + "，中文摘要 " + data.counts.summary + "）";
+    if (!items.length) {
+      $("list").innerHTML = '<p class="empty">没有符合条件的文章，请调整筛选。</p>';
+      return;
+    }
+    $("list").innerHTML = items.map((a) => {
+      const tags = (a.tags || []).map((t) => '<span class="chip' + (t === activeTag ? " active" : "") + '" data-tag="' + esc(t) + '">' + esc(t) + "</span>").join("");
+      const updated = a.updated ? " · 更新 " + a.updated : "";
+      return (
+        '<a class="card" href="' + esc(a.html_path) + '">' +
+          '<p class="meta-row">' +
+            '<span class="co">' + esc(a.company_zh) + "</span>" +
+            "<time>" + esc(a.date) + updated + "</time>" +
+            '<span class="kind ' + a.type + '">' + esc(a.type_zh) + "</span>" +
+            '<span class="cat">' + esc(a.category) + "</span>" +
+          "</p>" +
+          "<h2>" + esc(a.title_zh) + "</h2>" +
+          '<p class="en">' + esc(a.title_en) + "</p>" +
+          (a.excerpt ? '<p class="excerpt">' + esc(a.excerpt) + "</p>" : "") +
+          '<p class="chips">' + tags + "</p>" +
+        "</a>"
+      );
+    }).join("");
+  }
+
+  function renderTags() {
+    const counts = {};
+    data.articles.forEach((a) => (a.tags || []).forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
+    const tags = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b, "zh"));
+    $("tag-bar").innerHTML = tags.map((t) =>
+      '<button type="button" class="chip' + (t === activeTag ? " active" : "") + '" data-tag="' + esc(t) + '">' + esc(t) + " · " + counts[t] + "</button>"
+    ).join("");
+  }
+
+  function onTag(tag) {
+    activeTag = (activeTag === tag) ? "" : tag;
+    renderTags();
+    render();
+    writeParams();
+  }
+
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-tag]");
+    if (!el) return;
+    e.preventDefault();
+    e.stopPropagation();
+    onTag(el.getAttribute("data-tag"));
+  });
+
+  ["q", "company", "category"].forEach((id) => {
+    $(id).addEventListener("input", () => { render(); writeParams(); });
+    $(id).addEventListener("change", () => { render(); writeParams(); });
+  });
+
+  fetch("data/articles.json")
+    .then((r) => {
+      if (!r.ok) throw new Error("无法加载 data/articles.json");
+      return r.json();
+    })
+    .then((d) => {
+      data = d;
+      d.companies.forEach((c) => {
+        if ((d.counts.by_company[c.id] || 0) === 0) return;
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.name_zh + "（" + d.counts.by_company[c.id] + "）";
+        $("company").appendChild(opt);
+      });
+      d.categories.forEach((cat) => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        $("category").appendChild(opt);
+      });
+      applyParamsToControls();
+      renderTags();
+      render();
+    })
+    .catch((err) => {
+      $("stats").textContent = "加载失败：" + err.message + "。请通过本地 HTTP 服务打开 docs/ 目录（例如 python3 -m http.server）。";
+    });
+})();
+</script>
+</body>
+</html>

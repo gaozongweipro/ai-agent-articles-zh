@@ -1,0 +1,154 @@
+---
+title_en: Introducing the Agents API
+title_zh: 介绍 Agents API
+company: openai
+date: 2026-09-10
+url: https://openai.com/index/introducing-the-agents-api/
+type: full
+category: 框架与 SDK
+tags:
+  - Agents SDK
+  - Codex
+  - harness
+  - 沙箱
+  - 子 Agent
+  - MCP
+---
+
+# 介绍 Agents API
+
+用 Codex harness 构建并运行云端智能体，由 OpenAI 完全托管。
+
+在把 Codex 和 ChatGPT for Work 扩展到全球数百万人的过程中，我们学到了让长时运行智能体在实践中表现良好需要什么。有用的智能体需要一个强大的 harness，来管理上下文、高效使用工具并协调子智能体。它们还需要能让它们可靠运行数日的基础设施，以及可以处理文件、运行代码并保存中间结果的环境。
+
+今天，我们以公开测试的形式推出 Agents API，通过一个简单、灵活的 API，把驱动 Codex 的同一套 harness 与基础设施带给开发者。
+
+## 客户怎么说
+
+> 使用 Agents API 后，我们的评估分数从 0.71 提升到 0.85。API 中的子智能体支持非常出色，极大加快了我们的工作流。以前在旧设置里观察和编排子智能体相当繁琐，新的 API 给我们带来了 4 倍的延迟下降。我们为此优化了很久，而子智能体流程是开箱即用的巨大提升。
+>
+> —— Jack Weissenberger，Ciridae CTO
+
+> 改变真实世界中的业务，意味着把 AI 部署进各种形态的工作流。Agents API 提供 harness；环境、上下文和 UX 仍然是我们的。借助我们的 AI 平台 Nexus，我们现在可以在数小时内跨行业（从住宅服务到建筑）搭建智能体。
+>
+> —— Rasmus Wissmann，Long Lake CTO
+
+> Agents API 让我们能以不同方式思考如何架构复杂、多步骤的工作流。过去我们编写提示链并自己管理一组工具调用，现在可以像 Codex 在笔记本电脑上那样，直接在代码中使用智能体。它已经帮我们解决了若干原本需要自建智能体基础设施的问题。
+>
+> —— Cole Striler，WithCoverage 工程总监
+
+> 把案件审查工作流迁移到 Agents API 后，我们看到每案成本下降 60%，延迟更低，token 效率显著提高，同时保持原有性能。
+>
+> —— Bhavyansh Sabharwal，SafetyKit
+
+> 测试中最突出的是 Agents API 如何自然地处理突发工作负载。我们可以把工作分发给数百个智能体，异步运行，稍后再收集结果，而不必在高峰之间让基础设施闲置。
+>
+> —— Dmitry Khanukov，Dwelly 联合创始人兼 CTO
+
+> 在金融服务中赢得客户信任至关重要。OpenAI 的 Agents API 让我们能构建更可靠的智能体，使客户有信心在生产中使用它们。通过把智能体 harness 与沙箱分离，我们把失败的智能体响应减少了 86%。
+>
+> —— Serhii Shchoholiev，Hypha 首席工程师
+
+> Agents API 在一个真实、活跃的仓库中处理了实现、独立审查、修复和真实浏览器验证。总体而言，该智能体的工程品质非常强。
+>
+> —— Maks Operlejn，deepsense.ai 高级机器学习工程师
+
+> 在 Nash，我们部署了数千个长时运行的 AI 智能体，管理全球物流网络中数以亿计的配送。OpenAI 的 Agents API 为我们提供了生产中持续运行的智能体所需的持久会话与编排层——管理上下文、恢复和多步执行——而 Nash 提供把它们连接到物理世界的工具与执行环境。这让我们的智能体能够在可能跨越数小时或数日的复杂工作流中推理、行动、恢复并协作。这些智能体是生产基础设施，为我们的合作伙伴运行关键物流运营。
+>
+> —— Aziz Alghunaim，Nash.ai 联合创始人兼 CTO
+
+## 一次 API 调用构建云端智能体
+
+有了 Agents API，你可以通过一次 API 调用，指定任务、模型、工具和环境，创建一个可投产的智能体：
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI();
+
+const session = await client.beta.agents.sessions.create({
+  agent: {
+    model: "gpt-6-astra",
+    tools: [
+      {
+        type: "mcp",
+        server_label: "observability",
+        transport: {
+          type: "http",
+          server_url: "https://observability.example.com/mcp",
+        },
+      },
+    ],
+    multi_agent: { enabled: true, max_concurrent_subagents: 3 },
+  },
+  vault_ids: ["vault_YOUR_VAULT_ID"],
+  environment: {
+    type: "openai_hosted",
+    capability_directories: ["/workspace/capabilities/skills"],
+  },
+  input:
+    "Investigate service-api’s elevated 5xx rate over the last 30 minutes. " +
+    "Delegate deployment, error, and dependency analysis to subagents. " +
+    "Save findings, evidence, and recommended mitigation in /workspace/outputs.",
+});
+```
+
+OpenAI 托管并维护 harness。你选择智能体的计算环境：在 OpenAI 托管的沙箱中、在你自己的基础设施上，或与我们的沙箱合作伙伴一起。Agents API 为你在优化过的智能体 harness 与基础设施之上构建智能体提供了坚实基础，让你能专注于使智能体独特的工具、知识与工作流。
+
+Agents API 用支撑 Codex 的同一套 harness 与基础设施为你的智能体提供动力。
+
+## 选择你的智能体环境
+
+不同工作负载需要不同的计算、存储和部署选项。Agents API 让你选择适合应用的沙箱。
+
+我们正与包括 Blaxel、Cloudflare、Daytona、DigitalOcean、E2B、Modal、Oracle、Runloop 和 Vercel 在内的生态提供商合作，提供满足多种需求的一流集成：
+
+- 完全托管的环境，或部署在你的 VPC 内
+- 特定的文件与密钥存储机制
+- 不同的 CPU、GPU 和内存配置，以及与公司工作流匹配的性能、冷启动和成本特征
+
+## OpenAI 托管沙箱
+
+对于希望快速开始并高效扩展的开发者，我们还推出 OpenAI 托管沙箱。它利用驱动 Codex 和 ChatGPT 的同一套沙箱基础设施。
+
+OpenAI 负责开通和管理沙箱，为你的智能体提供安全、高性能的环境以运行代码、处理文件并产出工件。这些沙箱可以灵活配置你的文件、软件包、skills 和插件，为智能体完成任务提供所需条件。
+
+## 在不断演进的 Codex harness 上构建
+
+要利用新的模型能力，往往意味着改造你的 harness，从而占用改进应用的宝贵时间。Agents API 在每次模型发布时提供对这些能力的版本化访问。我们与模型同步维护并持续改进 harness，帮助你的智能体从每次升级中获得更好表现。例如，近期对 harness 的改进包括：
+
+### 让智能体在长会话中持续工作
+
+为支持模型工作数小时，我们构建了上下文管理，帮助智能体在更长的会话中携带相关信息。当会话接近上下文限制时，Agents API 会自动压缩（compact）较早的上下文，同时保留智能体继续工作所需的信息。开发者可以构建跨越多个上下文窗口的工作流，而无需自己实现压缩逻辑。
+
+### 帮助智能体更高效地使用更多工具
+
+Agents API 帮助智能体找到正确的工具并高效使用它们。工具搜索（tool search）按需加载相关工具定义，有助于在保留模型缓存的同时降低 token 用量和成本。一旦工具可用，程序化工具调用（programmatic tool calling）让智能体并行运行调用、串联相关操作，并在代码中过滤或组合结果，从而在处理大量数据时只把相关结果带回上下文。Agents API 支持 MCP、自定义函数，以及网络搜索等内置工具。
+
+### 让智能体用子智能体并行化工作
+
+借助多智能体支持，Agents API 可以把复杂任务拆成独立部分，并委托给并行工作的子智能体。每个子智能体维护自己的上下文，从而专注于其任务，而主智能体协调它们的工作并汇总结果。这可以加快受益于并行工作的研究、分析和编程任务，而无需你自建编排。
+
+```json
+{
+  "agent": {
+    "model": "gpt-6-astra",
+    "multi_agent": {
+      "enabled": true,
+      "max_concurrent_subagents": 3
+    }
+  }
+}
+```
+
+## 开源基础
+
+Agents API 由开源的 Codex harness 驱动，让开发者可以看到协调模型调用、工具和上下文的核心逻辑。在 Agents API 中，OpenAI 运营并维护该 harness，同时开发者可以检查并学习其公开代码库。
+
+## 开始构建
+
+Agents API 即日起以公开测试形式向所有开发者提供。使用 Agents API 没有额外费用——你只需为智能体使用的 tokens 和工具付费，详见定价页。
+
+阅读 Agents API 概览了解更多，或跟随快速入门，把 Codex 背后的 harness 带入你自己的智能体。
+
+在公开测试期间，我们将根据你的反馈快速迭代，迈向正式可用。请告诉我们什么有效、你在哪里遇到摩擦，以及你在生产中构建和运行智能体还需要什么。

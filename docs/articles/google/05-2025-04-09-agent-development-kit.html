@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Development Kit：让构建多智能体应用变得容易 · Google / DeepMind</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">Google / DeepMind</span>
+        <time datetime="2025-04-09">2025-04-09</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">框架与 SDK</span>
+      </p>
+      <h1>Agent Development Kit：让构建多智能体应用变得容易</h1>
+      <p class="en-title">Agent Development Kit: Making it easy to build multi-agent applications</p>
+      
+      <p class="orig">原文：<a href="https://developers.googleblog.com/en/agent-development-kit-easy-to-build-multi-agent-applications/" target="_blank" rel="noopener">https://developers.googleblog.com/en/agent-development-kit-easy-to-build-multi-agent-applications/</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=ADK">ADK</a><a class="chip" href="../../index.html?tag=多 Agent">多 Agent</a><a class="chip" href="../../index.html?tag=MCP">MCP</a><a class="chip" href="../../index.html?tag=评测">评测</a><a class="chip" href="../../index.html?tag=框架与 SDK">框架与 SDK</a></p>
+    </header>
+    <div class="body"><h1 id="agent-development-kit">Agent Development Kit：让构建多智能体应用变得容易</h1>
+<p>AI 世界正在迅速超越单一用途模型，走向智能、自主的多智能体系统。然而，构建这些多智能体系统带来了新的挑战。正因为如此，我们今天在 Google Cloud NEXT 2025 上推出了 Agent Development Kit（ADK），这是来自 Google 的新开源框架，旨在简化智能体和多智能体系统的全栈、端到端开发。ADK 赋能开发者像你一样，以更大的灵活性和精确控制构建可投产的智能体应用。</p>
+<p>ADK 是为 Agentspace 和 Google Customer Engagement Suite（CES）等 Google 产品中的智能体提供动力的同一框架。通过开源 ADK，我们旨在为开发者提供强大、灵活的工具，以便在快速演进的智能体图景中进行构建。ADK 被设计为灵活的，可以使用不同模型，并为不同部署环境构建可投产的智能体。</p>
+<h2 id="adk">ADK 的核心支柱：构建、交互、评估、部署</h2>
+<p>ADK 在整个智能体开发生命周期中提供能力：</p>
+<ul>
+<li>天生的多智能体：通过在层级中组合多个专业智能体，构建模块化、可扩展的应用。实现复杂的协调与委托。</li>
+<li>丰富的模型生态：选择最适合你需求的模型。ADK 可与你选择的模型一起工作——无论是 Gemini，还是可通过 Vertex AI Model Garden 访问的任何模型。该框架还提供 LiteLLM 集成，让你可以从 Anthropic、Meta、Mistral AI、AI21 Labs 等众多提供商的模型中选择。</li>
+<li>丰富的工具生态：为智能体配备多样能力：使用预构建工具（Search、Code Exec）、Model Context Protocol（MCP）工具，集成第三方库（LangChain、LlamaIndex），甚至把其他智能体当作工具（LangGraph、CrewAI 等）。</li>
+<li>内置流式：通过 ADK 独特的双向音频和视频流能力，以类似人类的对话与智能体交互。只需几行代码，你就可以创建改变你与智能体协作方式的自然交互——从文本走向丰富的多模态对话。</li>
+<li>灵活编排：使用工作流智能体（<code>Sequential</code>、<code>Parallel</code>、<code>Loop</code>）定义可预测的流水线，或利用 LLM 驱动的动态路由（<code>LlmAgent</code> transfer）实现自适应行为。</li>
+<li>集成的开发者体验：用强大的 CLI 和可视化 Web UI 在本地开发、测试和调试。逐步检查事件、状态和智能体执行。</li>
+<li>内置评估：通过对照预定义测试用例，同时评估最终回复质量和逐步执行轨迹，系统地评估智能体表现。</li>
+<li>轻松部署：把智能体容器化并部署到任何地方。</li>
+</ul>
+<h2 id="_1">开始构建你的第一个智能体</h2>
+<p>虽然我们鼓励你探索文档中的示例，但核心思想是 Pythonic 的简洁。你定义智能体的逻辑、它可以使用的工具，以及它应如何处理信息。ADK 提供管理状态、编排工具调用以及与底层 LLM 交互的结构。下面是一个基本智能体的示意例子。</p>
+<p>代码可见快速入门指南。</p>
+<pre><code class="language-python">from google.adk.agents import LlmAgent
+from google.adk.tools import google_search
+
+dice_agent = LlmAgent(
+    model=&quot;gemini-2.0-flash-exp&quot;,  # Required: Specify the LLM
+    name=&quot;question_answer_agent&quot;,  # Required: Unique agent name
+    description=&quot;A helpful assistant agent that can answer questions.&quot;,
+    instruction=&quot;&quot;&quot;Respond to the query using google search&quot;&quot;&quot;,
+    tools=[google_search],  # Provide an instance of the tool
+)
+
+# you can run this by using adk web
+</code></pre>
+<p>这个简单例子展示了基本结构。当构建涉及多个智能体、复杂工具使用和动态编排、同时保持控制的更复杂应用时，ADK 真正闪耀。</p>
+<p>ADK 在你与智能体交互的方式上提供灵活性：CLI、Web UI、API Server 和 API（Python）。你定义智能体（<code>agent.py</code> 中的核心逻辑）的方式，无论选择哪种交互方式都相同。差异在于你如何发起和管理交互。所有这些都可在 ADK 文档中找到示例。</p>
+<h2 id="adk_1">用 ADK 构建多智能体应用</h2>
+<p>当你从单个智能体走向构建利用工具的协作多智能体系统时，ADK 真正闪耀。想象创建一个专业智能体团队，其中主智能体可以根据对话委托任务。ADK 通过层级结构和智能路由使这一切变得容易。</p>
+<p>让我们走一个示意例子——一个处理天气查询、但把问候委托给专门 GreetingAgent 的 <code>WeatherAgent</code>。</p>
+<ol>
+<li>定义工具：智能体使用工具来执行动作。这里，我们的 <code>WeatherAgent</code> 需要一个获取天气数据的工具。我们定义一个 Python 函数；ADK 使用其 <code>docstring</code> 来理解何时以及如何使用它。</li>
+</ol>
+<pre><code class="language-python">def get_weather(city: str) -&gt; dict:
+    # Best Practice: Log tool execution for easier debugging
+    print(f&quot;--- Tool: get_weather called for city: {city} ---&quot;)
+    city_normalized = city.lower().replace(&quot; &quot;, &quot;&quot;)
+
+    mock_weather_db = {
+        &quot;newyork&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;The weather in New York is sunny with a temperature of 25°C.&quot;},
+        &quot;london&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;It's cloudy in London with a temperature of 15°C.&quot;},
+        &quot;tokyo&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;Tokyo is experiencing light rain and a temperature of 18°C.&quot;},
+        &quot;chicago&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;The weather in Chicago is sunny with a temperature of 25°C.&quot;},
+        &quot;toronto&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;It's partly cloudy in Toronto with a temperature of 30°C.&quot;},
+        &quot;chennai&quot;: {&quot;status&quot;: &quot;success&quot;, &quot;report&quot;: &quot;It's rainy in Chennai with a temperature of 15°C.&quot;},
+    }
+
+    if city_normalized in mock_weather_db:
+        return mock_weather_db[city_normalized]
+    else:
+        return {&quot;status&quot;: &quot;error&quot;, &quot;error_message&quot;: f&quot;Sorry, I don't have weather information for '{city}'.&quot;}
+</code></pre>
+<ol start="2">
+<li>定义智能体及其关系：我们使用 <code>LlmAgent</code>（或 <code>Agent</code>）创建智能体。请特别注意 <code>instruction</code> 和 <code>description</code> 字段——LLM 在很大程度上依赖它们来理解角色，并使用对子智能体的自动委托来做出委托决策。</li>
+</ol>
+<pre><code class="language-python">greeting_agent = Agent(
+    model=LiteLlm(model=&quot;anthropic/claude-3-sonnet-20240229&quot;),
+    name=&quot;greeting_agent&quot;,
+    instruction=&quot;You are the Greeting Agent. Your ONLY task is to provide a friendly greeting to the user. &quot;
+                &quot;Do not engage in any other conversation or tasks.&quot;,
+    description=&quot;Handles simple greetings and hellos&quot;,
+)
+
+farewell_agent = Agent(
+    model=LiteLlm(model=&quot;anthropic/claude-3-sonnet-20240229&quot;),
+    name=&quot;farewell_agent&quot;,
+    instruction=&quot;You are the Farewell Agent. Your ONLY task is to provide a polite goodbye message. &quot;
+                &quot;Do not perform any other actions.&quot;,
+    description=&quot;Handles simple farewells and goodbyes&quot;,
+)
+
+root_agent = Agent(
+    name=&quot;weather_agent_v2&quot;,
+    model=&quot;gemini-2.0-flash-exp&quot;,
+    description=&quot;You are the main Weather Agent, coordinating a team. - Your main task: Provide weather using the `get_weather` tool. Handle its 'status' response ('report' or 'error_message'). - Delegation Rules: - If the user gives a simple greeting (like 'Hi', 'Hello'), delegate to `greeting_agent`. - If the user gives a simple farewell (like 'Bye', 'See you'), delegate to `farewell_agent`. - Handle weather requests yourself using `get_weather`. - For other queries, state clearly if you cannot handle them.&quot;,
+    tools=[get_weather],
+    sub_agents=[greeting_agent, farewell_agent]
+)
+</code></pre>
+<h3 id="_2">委托如何工作</h3>
+<ul>
+<li>默认的智能体行为是允许委托。</li>
+<li>在处理用户消息时，LLM 会考虑查询、当前智能体的 <code>description</code>，以及相关智能体（层级中定义的父/子智能体）的 <code>description</code> 字段。</li>
+<li>如果 LLM 根据描述判定另一个智能体更合适（例如用户说 “Hi”，与 <code>GreetingAgent</code> 的描述匹配），它就会发起转移。</li>
+</ul>
+<p>清晰、有区分度的描述至关重要！LLM 用它们来有效路由任务。</p>
+<p>在这一设置中，如果用户以 “Hi” 开始，作为处理输入的根智能体的 <code>WeatherAgent</code> 可以识别这不是天气查询，通过描述看到 <code>GreetingAgent</code> 合适，并自动转移控制权。如果用户问 “What&rsquo;s the weather in Chicago?”，<code>WeatherAgent</code> 会使用其 <code>get_weather</code> 工具直接处理。</p>
+<p>这个例子展示了 ADK 的层级结构和由描述驱动的委托，如何让你构建有组织、可维护且复杂的多智能体应用。</p>
+<h2 id="_3">完成生命周期：评估与部署</h2>
+<p>构建像我们的天气智能体这样的智能智能体是基础，但可靠地把它们带给用户涉及关键的下一步：严格评估和无缝部署。在上线前，确保你的智能体行为可预期且正确至关重要。ADK 的集成评估工具正是为此而设计，让你对照预定义数据集（如 <code>evaluation.test.json</code> 或 <code>test.json</code>）系统地测试执行路径和回复质量。你可以在测试套件中用 <code>AgentEvaluator.evaluate()</code> 以编程方式运行这些检查，也可以通过 ADK eval 命令行工具或 Web UI 直接使用评估。</p>
+<p>一旦你对表现满意，ADK 通过部署到任何容器运行时的选项，或与 Vertex AI Agent Engine 的集成，提供清晰、精简的生产路径。这让你能够利用完全托管、可扩展且企业级的运行时，完成开发生命周期，并赋能你从复杂原型走向稳健、可投产的智能体应用。</p>
+<h2 id="adk-genkit">为你选择框架：ADK 还是 Genkit？</h2>
+<p>当你探索用 ADK 构建多智能体系统的可能性时，可能想知道它如何融入 Google 更广泛的 GenAI 开发工具图景。虽然有包括 Genkit 框架在内的多种 SDK 和框架可用，了解 ADK 的相对重点会有帮助。下面是一个简要比较：</p>
+<h3 id="agent-development-kit_1">Agent Development Kit</h3>
+<ul>
+<li>针对复杂智能体和多智能体系统做了优化，为智能体开发提供更高层的抽象，并内置对 LiteLLM 和 Vertex AI Model Garden 的集成，以支持多种模型。</li>
+<li>聚焦于定义智能体行为与交互。</li>
+<li>支持双向流式。</li>
+</ul>
+<h3 id="genkit">Genkit</h3>
+<ul>
+<li>为构建大量 AI 驱动体验提供基础构建块。</li>
+<li>包含用于迭代、测试和调试 AI 相关交互的开发者工具。</li>
+<li>通过社区插件支持来自 Google AI、Vertex AI 以及第三方的多种大语言模型。</li>
+</ul>
+<h3 id="_4">选择正确的工具</h3>
+<p>最终，最佳选择取决于项目的具体目标。如果你在一个定义良好的框架内构建复杂、协作的智能体系统，ADK 提供了强大的方案。对于许多需要灵活性和广泛模型支持的其他 GenAI 项目，Genkit 是出色的选择。</p>
+<h2 id="adk-google-cloud">ADK 可在任何地方工作，但针对 Google Cloud 做了优化</h2>
+<p>虽然 Agent Development Kit（ADK）提供与各种工具一起工作的灵活性，但它针对在 Google Cloud 生态系统内、特别是与 Gemini 模型和 Vertex AI 的无缝集成做了优化。这种量身设计让开发者能充分利用 Gemini 的高级能力，例如 Gemini 2.5 Pro Experimental 中增强的推理和工具使用，并提供把这些智能体部署到 Vertex AI 完全托管、企业级运行时以实现可扩展性的直接、原生路径。</p>
+<p>至关重要的是，这种深度集成延伸到更广泛的企业版图；ADK 使智能体能够通过 100 多个预构建连接器直接连接到系统和数据，利用用 Application Integration 构建的工作流，并访问存储在 AlloyDB、BigQuery 和 NetApp 等系统中的数据，而无需数据复制。</p>
+<p>此外，用 ADK 构建的智能体可以安全地利用通过 Apigee 管理的组织现有 API 投资，进一步通过已建立的接口增强其能力。</p>
+<p>这种跨越先进 AI 模型、可扩展部署、多样数据源和现有 API 的全面连通性，使 ADK 在 Google Cloud 环境中使用时格外强大。</p>
+<h2 id="adk_2">用 ADK 构建下一代智能体</h2>
+<p>Agent Development Kit（ADK）为构建下一代 AI 应用提供了强大、灵活且开源的基础。它通过以下方式应对多智能体开发的核心挑战：</p>
+<ul>
+<li>对智能体行为与编排的精确控制。</li>
+<li>丰富的工具与集成生态。</li>
+<li>用于构建和调试的集成开发者体验。</li>
+<li>对可靠智能体至关重要的稳健评估框架。</li>
+<li>包括托管选项在内的清晰部署路径。</li>
+</ul>
+<p>我们非常兴奋地期待看到你用 ADK 构建的东西。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用一组并行的 Claude 构建 C 编译器 · Anthropic</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="sum">
+    <header>
+      <p class="meta-row">
+        <span class="co">Anthropic</span>
+        <time datetime="2026-02-05">2026-02-05</time>
+        <span class="kind sum">中文摘要</span>
+        <span class="cat">编码 Agent</span>
+      </p>
+      <h1>用一组并行的 Claude 构建 C 编译器</h1>
+      <p class="en-title">Building a C compiler with a team of parallel Claudes</p>
+      
+      <p class="orig">原文：<a href="https://www.anthropic.com/research/building-c-compiler" target="_blank" rel="noopener">https://www.anthropic.com/research/building-c-compiler</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=Claude Code">Claude Code</a><a class="chip" href="../../index.html?tag=多 Agent">多 Agent</a><a class="chip" href="../../index.html?tag=编码 Agent">编码 Agent</a><a class="chip" href="../../index.html?tag=并行">并行</a></p>
+    </header>
+    <div class="body"><h1 id="claude-c">用一组并行的 Claude 构建 C 编译器</h1>
+<p>Safeguards 团队研究员 Nicholas Carlini 介绍了一种称为 “agent teams” 的监督方法：多个 Claude 实例在共享代码库上并行工作，无需持续人工干预。为做压力测试，他让 16 个智能体从零编写基于 Rust 的 C 编译器，目标是能够编译 Linux 内核。在近 2,000 个 Claude Code sessions 和约 20,000 美元 API 成本后，团队产出了约 10 万行编译器，可以在 x86、ARM 和 RISC-V 上构建 Linux 6.9。编译器开源见 <a href="https://github.com/anthropics/claudes-c-compiler">anthropics/claudes-c-compiler</a>。</p>
+<p>Harness 是一个简单循环（类似 Ralph-loop）：智能体完成一项任务后立即接下一项，并以 <code>--dangerously-skip-permissions</code> 在容器中运行。并行可以同时调试多个问题，并允许角色专门化。作者强调：测试必须极高质量，否则智能体会解决错误问题；要把测试和反馈写给“刚刚掉进全新容器、没有任何 context 的 Claude”，而不是写给自己；用 README、进度文件、锁和 CI 让多个智能体能自行定向并避免互相破坏已有功能。早期原型没有编排智能体，由每个 Claude 自行决定下一步。文章也讨论了该方法的上限与评估。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

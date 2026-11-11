@@ -1,0 +1,87 @@
+---
+title_en: Introducing Microsoft Agent Framework
+title_zh: 介绍 Microsoft Agent Framework
+company: microsoft
+date: 2025-10-01
+url: https://azure.microsoft.com/en-us/blog/introducing-microsoft-agent-framework/
+type: full
+category: 框架与 SDK
+tags:
+  - 框架与 SDK
+  - 多 Agent
+  - MCP
+  - A2A
+  - 评测
+---
+
+# 介绍 Microsoft Agent Framework
+
+今天我们宣布 Azure AI Foundry 的新能力，帮助开发者更轻松地构建、观测和治理多智能体系统，同时帮助组织缩小 AI 中的信任差距。
+
+随着智能体 AI 的采用加速——据 PwC 统计，十家企业中已有八家在使用某种形式的基于智能体的 AI——管理这些系统的复杂性也在上升。开发者面对碎片化的工具，组织则难以确保智能体负责任地行动。我们在 Azure AI Foundry 的最新更新正是针对这些挑战。
+
+## 介绍 Microsoft Agent Framework（公开预览）
+
+Microsoft Agent Framework 现已进入公开预览，它是简化多智能体系统编排的开源 SDK 与运行时。它把曾经作为 Microsoft Research 项目的 AutoGen，与 Semantic Kernel 面向企业的基础汇合为统一的、商业级框架，从而把前沿研究带给开发者。
+
+借助 Microsoft Agent Framework，开发者可以：
+
+- 先在本地实验，再部署到 Azure AI Foundry，并内置可观测性、持久性与合规能力。
+- 通过 OpenAPI 集成任意 API，借助 Agent2Agent（A2A）跨运行时协作，并使用 Model Context Protocol（MCP）动态连接工具。
+- 使用最新的多智能体模式（如 Magentic One），并把智能体编排进 Workflows。
+- 减少跨工具与平台的上下文切换。
+- 构建连接 Azure AI Foundry、Microsoft 365 Copilot 以及其他智能体平台的多智能体系统。
+
+该框架旨在帮助开发者保持心流。一项行业研究指出，50% 的开发者每周因工具碎片化等低效损失超过 10 小时，这凸显了降低复杂性、改善开发体验的必要性。
+
+KPMG 是使用 Microsoft Agent Framework 降低摩擦的组织之一。其转变始于 KPMG Clara——在全球每项 KPMG 审计中使用的云端智能审计平台。KPMG Clara AI 与下一代开源 Microsoft Agent Framework 紧密对齐，该框架建立在 Semantic Kernel 与 AutoGen 的汇合之上。这意味着 KPMG Clara AI 可以把专业智能体连接到企业数据与工具，同时受益于内置防护与开放、可扩展的开发生态。框架的开源连接器让其中的智能体不仅能与 Azure AI Foundry 互操作，也能与外部系统和语言模型协作，从而在全球、受监管的企业中扩展多智能体协作。
+
+> Foundry Agent Service 和 Microsoft Agent Framework 把我们的智能体连接到数据、也连接到彼此；Azure AI Foundry 中的治理与可观测性，为 KPMG 成员所在的受监管行业取得成功提供了所需条件。
+>
+> —— Sebastian Stöckle，KPMG International 全球审计创新与 AI 负责人
+
+我们邀请开发者通过贡献代码与反馈，与我们一起塑造智能体 AI 的未来。
+
+## 多智能体工作流（私有预览）
+
+在 Microsoft Agent Framework 之上，我们把这些能力直接延伸到云端，在 Foundry Agent Service 中提供多智能体工作流。这一新功能让开发者能够用结构化、有状态的工作流层，编排复杂的多步业务流程。
+
+借助多智能体工作流，团队可以：
+
+- 在长时任务中协调多个智能体，并持久化状态与共享上下文。
+- 自动化复杂企业场景，例如客户入职、金融交易处理与供应链自动化。
+- 利用内置的错误处理、重试与恢复，提升规模化时的可靠性。
+
+工作流可以在 VS Code 扩展或 Azure AI Foundry 中可视化编写和调试，然后在 Foundry 中与现有方案一起部署、测试和管理。若干客户已在试验该能力，我们将在随后数周扩大范围。
+
+## 跨流行框架的多智能体可观测性，以及对 OpenTelemetry 的贡献
+
+我们还宣布增强多智能体可观测性，并向 OpenTelemetry 贡献，以帮助标准化智能体系统的追踪与遥测。这让团队对智能体工作流、工具调用与协作有更深入的可见性——对调试、优化与合规至关重要。上述 OpenTelemetry 增强是与 Cisco 的孵化引擎 Outshift 合作完成的。
+
+有了这些增强，Azure AI Foundry 现在可以为用多种框架构建的智能体提供统一可观测性，包括 Microsoft Agent Framework，以及 LangChain、LangGraph 和 OpenAI Agents SDK 等。
+
+## Azure AI Foundry 中的 Voice Live API 现已正式可用
+
+多智能体工作流越来越多地由语音输入发起、并以语音输出结束。我们宣布 Voice Live API 正式可用，帮助开发者与企业构建可扩展、可投产的语音 AI 智能体。它是统一的实时 speech-to-speech 接口，把语音识别（STT）、生成式 AI 模型、语音合成（TTS）、形象（avatar）与对话增强功能整合到单一低延迟流水线中。Capgemini、healow、Astra Tech 和 Agora 等组织正用它构建客服、教育辅导、HR 助手和多语言智能体。
+
+## 负责任 AI 能力公开预览
+
+在增强可观测性与框架集成的同时，确保 AI 系统负责任、安全地运行同样重要——尤其当它们更深地嵌入关键企业工作流时。
+
+据 McKinsey 2025 全球 AI 信任调查，阻碍 AI 采用的首要障碍是缺乏治理与风险管理工具。因此我们将在随后数周把以下负责任 AI 功能放入公开预览：
+
+- 任务遵循（Task adherence）：帮助智能体与所指派任务保持对齐。
+- 带 spotlighting 的 Prompt shields：防御提示注入，并标出风险行为。
+- PII 检测：识别并管理敏感数据。
+
+这些能力内置于 Azure AI Foundry，帮助组织更有信心地构建，并符合内外部标准。
+
+## 客户进展
+
+Azure AI Foundry 方案正帮助全球超过 70,000 家组织把 AI 创新转化为实际成果。例如：Commerzbank 正在试点用 Microsoft Agent Framework 驱动形象化客户支持；Citrix 在探索在 VDI 环境中使用智能体 AI；TCS 正在该框架上建设多智能体实践；Sitecore 在开发让营销人员通过智能体自动化内容供应链任务的方案；Elasticsearch 提供通向 Microsoft Agent Framework 的原生连接器，以便把企业数据纳入智能体与工作流。更完整的客户引言见原文。
+
+## 面向开发者的可信智能体工厂
+
+Azure AI Foundry 不只是一个平台——它是面向开发者与企业的可信智能体工厂。无论你是希望负责任地扩展 AI 的 CIO、关注治理的安全架构师，还是在构建下一代智能体的开发者，Foundry 都提供所需的工具、框架与信任基础。Microsoft Agent Framework 现已公开预览，是统一的企业级框架，支持经 OpenAPI 集成任意 API、通过 A2A 跨运行时协作，以及使用 MCP 动态连接工具。框架开源，欢迎开发者贡献。
+
+（文中引用的调查来源见原文脚注。）

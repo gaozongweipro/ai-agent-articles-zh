@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我们如何在各产品中约束 Claude · Anthropic</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="sum">
+    <header>
+      <p class="meta-row">
+        <span class="co">Anthropic</span>
+        <time datetime="2026-05-25">2026-05-25</time>
+        <span class="kind sum">中文摘要</span>
+        <span class="cat">安全与沙箱</span>
+      </p>
+      <h1>我们如何在各产品中约束 Claude</h1>
+      <p class="en-title">How we contain Claude across products</p>
+      
+      <p class="orig">原文：<a href="https://www.anthropic.com/research/how-we-contain-claude" target="_blank" rel="noopener">https://www.anthropic.com/research/how-we-contain-claude</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=安全">安全</a><a class="chip" href="../../index.html?tag=沙箱">沙箱</a><a class="chip" href="../../index.html?tag=Claude">Claude</a><a class="chip" href="../../index.html?tag=防护">防护</a></p>
+    </header>
+    <div class="body"><h1 id="claude">我们如何在各产品中约束 Claude</h1>
+<p>随着智能体能力与访问权限扩大，失败概率因安全和训练进展下降，但理论爆炸半径在增大。不部署的成本也在变大。工程问题变成如何限制爆炸半径。监督（human-in-the-loop）在理论上可行，但 Claude Code 遥测显示用户批准了约 93% 的权限提示，审批疲劳会削弱监督；auto mode 可以减轻这一点，但任何概率性防御都有非零漏报。因此本文聚焦 <strong>containment（约束/隔离）</strong>：通过 sandbox、虚拟机和出口控制，限制智能体<em>能够</em>做什么。</p>
+<p>风险分为三类：用户滥用、模型不当行为、外部攻击者（含 prompt injection）。防御对应三层：智能体运行的环境、智能体咨询的模型，以及智能体可触及的外部内容。文章总结三种产品模式及各自错过的风险：</p>
+<ol>
+<li><strong>临时容器</strong>（claude.ai 代码执行）：服务端容器，用 gVisor 等隔离。</li>
+<li><strong>人在回路中的 sandbox</strong>（Claude Code）：低延迟本地 sandbox；曾错过信任对话框之前的风险，以及用户本身作为注入向量。</li>
+<li><strong>本地 VM</strong>（Claude Cowork）：经 vsock 与 hypervisor 边界守卫的挂载工作区；曾错过经已批准域名的外泄，以及 VM 隔离把端点检测软件也挡在外面。</li>
+</ol>
+<p>文中强调：远程工具相对本地工具更难审计，因为行为可以在批准后改变；即使工具受信任，工具输出仍是攻击面。展望包括持久记忆投毒、多智能体信任升级，以及智能体身份（凭证留在主机钥匙串，VM 获得按 session 缩小范围的 token）。建议先在环境层设计约束，再在模型层引导行为；使隔离强度与用户监督能力匹配；谨慎对待定制组件，优先使用久经考验的 hypervisor、syscall 过滤器和容器运行时。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

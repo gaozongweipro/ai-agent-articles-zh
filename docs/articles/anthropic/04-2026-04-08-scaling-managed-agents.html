@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>规模化 Managed Agents：把大脑与双手解耦 · Anthropic</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">Anthropic</span>
+        <time datetime="2026-04-08">2026-04-08</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">框架与 SDK</span>
+      </p>
+      <h1>规模化 Managed Agents：把大脑与双手解耦</h1>
+      <p class="en-title">Scaling Managed Agents: Decoupling the brain from the hands</p>
+      
+      <p class="orig">原文：<a href="https://www.anthropic.com/research/managed-agents" target="_blank" rel="noopener">https://www.anthropic.com/research/managed-agents</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=Managed Agents">Managed Agents</a><a class="chip" href="../../index.html?tag=长时任务">长时任务</a><a class="chip" href="../../index.html?tag=harness">harness</a><a class="chip" href="../../index.html?tag=Claude">Claude</a></p>
+    </header>
+    <div class="body"><h1 id="managed-agents">规模化 Managed Agents：把大脑与双手解耦</h1>
+<p><em>按照我们的 <a href="https://platform.claude.com/docs/en/managed-agents/overview">文档</a> 开始使用 Claude Managed Agents。</em></p>
+<p>Engineering Blog 上的一个持续主题，是如何<a href="https://www.anthropic.com/engineering/building-effective-agents">构建有效智能体</a>，以及如何为<a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">长时运行的工作</a><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">设计 harnesses</a>。贯穿这些工作的一条主线是：harnesses 编码了关于 Claude 独自做不到什么的假设。然而，这些假设需要经常被质疑，因为随着模型进步，它们可能<a href="http://www.incompleteideas.net/IncIdeas/BitterLesson.html">过时</a>。</p>
+<p>仅举一例：在先前的工作中，<a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">我们发现</a> Claude Sonnet 4.5 会在感觉自己接近 context 上限时过早收尾——这种行为有时被称为 “context anxiety”。我们通过在 harness 中加入 context resets 来应对。但当我们把同一套 harness 用在 Claude Opus 4.5 上时，发现这种行为已经消失。这些 resets 变成了死重量。</p>
+<p>我们预期 harnesses 将继续演化。因此我们构建了 Managed Agents：Claude Platform 上的一项托管服务，通过一小套旨在比任何特定实现（包括我们今天运行的那些）更持久的接口，代表你运行长周期智能体。</p>
+<p>构建 Managed Agents 意味着解决计算中的一个老问题：如何为“<a href="http://www.catb.org/esr/writings/taoup/html/ch03s01.html">尚未想到的程序</a>”设计系统。几十年前，操作系统通过把硬件虚拟化为足够通用的抽象——<em>process</em>、<em>file</em>——来解决这个问题，这些抽象足以支撑当时还不存在的程序。抽象比硬件更持久。<code>read()</code> 命令并不关心它访问的是 1970 年代的磁盘组还是现代 SSD。上层抽象保持稳定，底层实现可以自由变化。</p>
+<p>Managed Agents 遵循同样的模式。我们将智能体的组成部件虚拟化：session（发生过的一切的只追加日志）、harness（调用 Claude、并把 Claude 的工具调用路由到相关基础设施的循环），以及 sandbox（Claude 可以运行代码和编辑文件的执行环境）。这使得每一部分的实现都可以被替换，而不干扰其他部分。我们对这些接口的形态有明确主张，但对它们背后运行什么并不固执。</p>
+<h2 id="dont-adopt-a-pet">不要收养一只宠物（Don’t adopt a pet）</h2>
+<p>一开始，我们把所有智能体组件放进同一个容器，这意味着 session、agent harness 和 sandbox 共享一个环境。这种方法有好处，包括文件编辑是直接的 syscalls，并且无需设计服务边界。</p>
+<p>但把一切耦合进一个容器后，我们碰到了一个老的基础设施问题：我们收养了一只<a href="https://cloudscaling.com/blog/cloud-computing/the-history-of-pets-vs-cattle/"><em>宠物</em></a>。在 pets-vs-cattle（宠物对牲畜）的类比中，宠物是有名字、需亲手照料、你承受不起失去的个体，而牲畜是可互换的。在我们的情形里，服务器成了那只宠物；如果容器失败，session 就丢失了。如果容器无响应，我们必须把它照料恢复健康。</p>
+<p>照料容器意味着调试无响应、卡住的 sessions。我们唯一的窗口是 WebSocket 事件流，但它无法告诉我们失败<em>发生在哪里</em>，这意味着 harness 中的 bug、事件流中的丢包，或容器下线，表现都是一样的。要弄清出了什么问题，工程师必须在容器内打开一个 shell，但因为该容器常常还保存着用户数据，这种方法实际上意味着我们缺乏调试能力。</p>
+<p>第二个问题是：harness 假定 Claude 所处理的一切都与它住在同一个容器里。当客户要求我们把 Claude 连接到他们的虚拟私有云时，他们要么必须把网络与我们的对等互联（peer），要么在他们自己的环境中运行我们的 harness。编码进 harness 的一个假设，在我们想把它连接到不同基础设施时，成了问题。</p>
+<h2 id="_1">把大脑与双手解耦</h2>
+<p>我们最终采用的方案，是把我们称为 “大脑”（Claude 及其 harness）的部分，与 “双手”（执行动作的 sandboxes 和工具）以及 “session”（session 事件日志）解耦。每一部分都成为对其他部分几乎不做假设的接口，并且每一部分都可以独立失败或被替换。</p>
+<p><strong>Harness 离开容器。</strong> 把大脑与双手解耦，意味着 harness 不再住在容器里。它调用容器的方式，与调用任何其他工具相同：<code>execute(name, input) → string</code>。容器变成了牲畜。如果容器死掉，harness 把失败当作工具调用错误捕获，并传回给 Claude。如果 Claude 决定重试，可以用标准配方重新初始化一个新容器：<code>provision({resources})</code>。我们再也不必把失败的容器照料恢复健康。</p>
+<p><strong>从 harness 失败中恢复。</strong> Harness 也变成了牲畜。因为 session 日志位于 harness 之外，harness 中没有任何东西需要在崩溃后存活。当一个 harness 失败时，可以用 <code>wake(sessionId)</code> 重启一个新的，用 <code>getSession(id)</code> 取回事件日志，并从最后一个事件恢复。在智能体循环期间，harness 用 <code>emitEvent(id, event)</code> 写入 session，以保持事件的持久记录。</p>
+<p><strong>安全边界。</strong> 在耦合设计中，Claude 生成的任何不受信任的代码，都与凭证运行在同一个容器中——因此一次 prompt injection 只需说服 Claude 读取自己的环境。一旦攻击者获得这些 tokens，他们就可以生成全新的、不受限制的 sessions，并把工作委托给它们。收窄作用域是一种显而易见的缓解措施，但这编码了一个关于 Claude 用有限 token 做不到什么的假设——而 Claude 正变得越来越聪明。结构性的修复是：确保这些 tokens 永远无法从 Claude 生成的代码所运行的 sandbox 中触及。</p>
+<p>我们用两种模式来保证这一点。Auth 可以与资源捆绑在一起，或保存在 sandbox 之外的保险库（vault）中。对于 Git，我们在 sandbox 初始化期间使用每个仓库的 access token 来克隆仓库，并把它接入本地 git remote。Git 的 <code>push</code> 和 <code>pull</code> 可以从 sandbox 内部工作，而智能体从不亲自处理 token。对于定制工具，我们支持 MCP，并把 OAuth tokens 存储在安全保险库中。Claude 通过专用代理调用 MCP 工具；该代理接收一个与 session 关联的 token。代理随后可以从保险库中取出对应凭证，并向外部服务发起调用。Harness 从不被告知任何凭证。</p>
+<h2 id="session-claude-context-window">Session 不是 Claude 的 context window</h2>
+<p>长周期任务常常超出 Claude 的 context window 长度，而应对这一问题的标准方法都涉及关于保留什么的不可逆决策。我们在先前关于 context engineering 的<a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">工作</a>中探讨过这些技术。例如，compaction 让 Claude 保存其 context window 的摘要，memory tool 让 Claude 把 context 写入文件，从而支持跨 session 学习。这可以与 context trimming 配对，后者有选择地移除旧的工具结果或 thinking blocks 等 tokens。</p>
+<p>但对保留或丢弃 context 做出不可逆决策，可能导致失败。很难知道未来的轮次会需要哪些 tokens。如果消息被 compaction 步骤转换，harness 会把被压缩的消息从 Claude 的 context window 中移除，而这些消息只有在被存储的情况下才可恢复。先前的工作<a href="https://arxiv.org/pdf/2512.24601">探讨过</a>通过把 context 存储为生活在 context window <em>之外</em>的对象来解决这个问题。例如，context 可以是 REPL 中的一个对象，LLM 通过编写代码来过滤或切片它，从而以编程方式访问。</p>
+<p>在 Managed Agents 中，session 提供了同样的好处，作为生活在 Claude 的 context window 之外的 context 对象。但 context 不是存储在 sandbox 或 REPL 中，而是持久地存储在 session 日志里。接口 <code>getEvents()</code> 允许大脑通过选择事件流的位置切片来询问 context。该接口可以灵活使用，使大脑可以从上次停止阅读的地方继续、在特定时刻之前回退几个事件以查看前因，或在特定动作之前重读 context。</p>
+<p>任何取出的事件也可以在传入 Claude 的 context window 之前，在 harness 中被转换。这些转换可以是 harness 所编码的任何内容，包括为了实现高 prompt cache 命中率而做的 context 组织，以及 context engineering。我们把可恢复的 context 存储（在 session 中）与任意的 context 管理（在 harness 中）分开，因为我们无法预测未来模型将需要怎样具体的 context engineering。这些接口把 context 管理推向 harness，只保证 session 是持久的、并且可供询问。</p>
+<h2 id="_2">许多大脑，许多双手</h2>
+<p><strong>许多大脑。</strong> 把大脑与双手解耦，解决了我们最早的客户抱怨之一。当团队希望 Claude 针对他们自己 VPC 中的资源工作时，唯一的路径是把他们的网络与我们的对等互联，因为持有 harness 的容器假定每项资源都在它旁边。一旦 harness 不再位于容器中，这一假设就消失了。同样的改变还有性能收益。当我们最初把大脑放进容器时，意味着有多少大脑就需要多少容器。对每个大脑而言，在该容器被配置完成之前，无法进行任何推理；每个 session 都要预先支付完整的容器启动成本。每一个 session，即使是那些永远不会触及 sandbox 的，都必须克隆仓库、启动进程、从我们的服务器获取待处理事件。</p>
+<p>这段空转时间表现为 time-to-first-token（TTFT），衡量的是一个 session 在接受工作与产出第一个回复 token 之间等待了多久。TTFT 是用户最能敏锐<em>感受到</em>的延迟。</p>
+<p>把大脑与双手解耦，意味着容器仅在需要时由大脑通过工具调用（<code>execute(name, input) → string</code>）来配置。因此，一个并不立刻需要容器的 session 不必等待容器。推理可以在编排层从 session 日志拉取待处理事件后立即开始。使用这一架构，我们的 p50 TTFT 下降了大约 60%，p95 下降超过 90%。扩展到许多大脑，只意味着启动许多无状态的 harnesses，并仅在需要时把它们连接到双手。</p>
+<p><strong>许多双手。</strong> 我们还希望能够把每个大脑连接到许多双手。在实践中，这意味着 Claude 必须对许多执行环境进行推理，并决定把工作送到哪里——这比在单个 shell 中操作更难的认知任务。我们一开始把大脑放在单个容器中，是因为早期模型还没有这种能力。随着智能扩展，单个容器反而成了限制：当该容器失败时，我们会丢失大脑所伸向的每一双手的状态。</p>
+<p>把大脑与双手解耦，使每一双手都成为一个工具，<code>execute(name, input) → string</code>：输入一个名称和输入，返回一个字符串。该接口支持任何定制工具、任何 MCP server，以及我们自己的工具。Harness 并不知道 sandbox 是一个容器、一部手机，还是一个宝可梦模拟器。而且因为没有一双手与任何一个大脑耦合，大脑可以把双手传递给彼此。</p>
+<h2 id="_3">结论</h2>
+<p>我们所面临的挑战是一个老问题：如何为“尚未想到的程序”设计系统。操作系统之所以能持续数十年，是因为它们把硬件虚拟化为足够通用、足以支撑当时还不存在的程序的抽象。通过 Managed Agents，我们的目标是设计一个能容纳未来围绕 Claude 的 harnesses、sandboxes 或其他组件的系统。</p>
+<p>Managed Agents 在同样的精神下是一个 meta-harness，对 Claude 未来将需要的<em>特定</em> harness 并不固执。相反，它是一个带有通用接口、允许许多不同 harnesses 的系统。例如，Claude Code 是我们在各种任务中广泛使用的优秀 harness。我们也已经表明，任务特定的智能体 harnesses 在狭窄领域中表现出色。Managed Agents 可以容纳其中任何一种，并随着时间与 Claude 的智能相匹配。</p>
+<p>Meta-harness 设计意味着对围绕 Claude 的接口有明确主张：我们预期 Claude 将需要操纵状态（session）和执行计算（sandbox）的能力。我们也预期 Claude 将需要扩展到许多大脑和许多双手的能力。我们设计这些接口，使它们可以在长周期上可靠且安全地运行。但我们对 Claude 将需要的大脑或双手的数量或位置不做假设。</p>
+<h2 id="_4">作者与致谢</h2>
+<p>由 Lance Martin、Gabe Cemaj 和 Michael Cohen 撰写。感谢 N.T.A. 和 Jeremy Fox 就这些主题进行的有益讨论。特别感谢 Agents API 团队和 Jake Eaton 的贡献。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

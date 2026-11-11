@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Co-Scientist：加速研究的多智能体 AI 伙伴 · Google / DeepMind</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="full">
+    <header>
+      <p class="meta-row">
+        <span class="co">Google / DeepMind</span>
+        <time datetime="2026-05-19">2026-05-19</time>
+        <span class="kind full">全文翻译</span>
+        <span class="cat">多 Agent</span>
+      </p>
+      <h1>Co-Scientist：加速研究的多智能体 AI 伙伴</h1>
+      <p class="en-title">Co-Scientist: A multi-agent AI partner to accelerate research</p>
+      
+      <p class="orig">原文：<a href="https://deepmind.google/blog/co-scientist-a-multi-agent-ai-partner-to-accelerate-research/" target="_blank" rel="noopener">https://deepmind.google/blog/co-scientist-a-multi-agent-ai-partner-to-accelerate-research/</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=多 Agent">多 Agent</a><a class="chip" href="../../index.html?tag=科研 Agent">科研 Agent</a><a class="chip" href="../../index.html?tag=评测">评测</a><a class="chip" href="../../index.html?tag=安全">安全</a><a class="chip" href="../../index.html?tag=Gemini">Gemini</a></p>
+    </header>
+    <div class="body"><h1 id="co-scientist-ai">Co-Scientist：加速研究的多智能体 AI 伙伴</h1>
+<p>Co-Scientist 团队</p>
+<p>介绍一个协作式 AI 伙伴，帮助研究者在生命科学及其他领域提出新假设。</p>
+<p>每一个伟大的科学突破都始于一个具有变革性的想法。发现的火花依赖于研究者连接不同事实并形成正确待检验假设的能力。但在信息过载和挑战日益复杂的时代，寻找这些大海捞针般的想法，已成为进步的显著瓶颈。</p>
+<p>我们相信，AI 可以通过作为突破性科学假设之生成与精炼的专用伙伴，帮助显著加快突破的步伐。</p>
+<p>今天，我们在 <em>Nature</em> 上发表了最新的 Co-Scientist 研究，介绍一个用 Gemini 构建的新多智能体 AI 系统，它迭代地为复杂科学问题生成、辩论并演化新颖假设。</p>
+<p>我们正通过 Hypothesis Generation 这一在 Google DeepMind、Google Research、Google Cloud 和 Google Labs 之间联合开发的新实验工具，向个别研究者提供 Co-Scientist 系统。我们将在随后数周开始推出，研究者可以在 labs.google/science 登记兴趣。</p>
+<p>自从去年分享早期研究以来，我们一直与利用它应对挑战性问题的团队合作开发和测试 Co-Scientist——从抗菌耐药性和植物免疫，到肝纤维化。我们兴奋地分享它已经在基础生物学、自然科学和工程中被应用的一些方式。</p>
+<h2 id="co-scientist-gemini">Co-Scientist 如何工作：用 Gemini 构建的多智能体系统</h2>
+<p>科学发现很少是一条直线；它是构想与假设生成、批评和精炼的循环。科学家往往只有在与复杂问题搏斗数日、数月甚至数年之后，才达到最深刻的洞见。Co-Scientist 背后的核心研究问题是：一个 AI 系统如何为科学发现进行这种严格的结构化思考？</p>
+<p>Co-Scientist AI 系统由基于 Gemini 模型的、协作的专业智能体联盟组成，我们可以把它们分成三个阶段：</p>
+<p>生成想法：</p>
+<ul>
+<li>Generation agent：基于科学文献和数据，提出初始焦点领域和新颖假设。</li>
+<li>Proximity agent：映射并聚类所生成的假设，以帮助确保对研究空间的多样、全面探索。</li>
+</ul>
+<p>辩论想法：</p>
+<ul>
+<li>Reflection agent：充当「虚拟同行评审」，从正确性、质量和新颖性方面批判地评估假设。</li>
+<li>Ranking agent：组织「想法锦标赛」，使用成对比较和模拟科学辩论，优先考虑最有前景的路径和假设。</li>
+</ul>
+<p>演化想法：</p>
+<ul>
+<li>Evolution agent：持续精炼、组合并建立在锦标赛中排名靠前的假设之上，以帮助迭代提高其质量。</li>
+<li>Meta-review agent：综合来自辩论和想法锦标赛的洞察，以持续优化系统，并为科学家生成最终研究提案以供审阅。</li>
+</ul>
+<p>编排该智能体联盟的是一个作为自适应规划器的 supervisor agent。与线性思考的 AI 模型不同，这一自由形式的规划器把高层研究目标分解为可执行步骤，协调智能体并行运行，并同时探索多条途径。</p>
+<p>所生成的想法被迭代精炼、批评并演化成新假设，形成科学推理与假设生成的良性循环。</p>
+<h2 id="_1">想法锦标赛：我们的系统如何验证、精炼和排序假设</h2>
+<p>Co-Scientist 可以探索数千个研究方向。为帮助找到最有影响力的方向，我们开发了「想法锦标赛」。该方法借鉴了 AlphaGo 和 AlphaStar 中使用的原则——但我们的 AI 智能体不是在玩游戏，而是举行科学辩论以生成、精炼和排序想法。</p>
+<p>为在推动新颖性边界的同时确保假设稳健且可检验，系统的大部分计算专门用于验证这些假设。通过对照科学文献和数据深入交叉检查主张，系统确保主张保持有根据、事实准确且逻辑连贯。系统目前集成网络搜索以及 ChEMBL 和 UniProt 等专业数据库以纳入额外知识。它也可以把 AlphaFold 等先进专业模型作为工具来利用，我们正在选定的研究合作中测试这一点。</p>
+<p>这些能力的结合，有助于使 Co-Scientist 成为用于结构化科学思考的可靠多智能体系统的首批例子之一，使它能够为复杂科学问题的新颖假设生成交付切实结果。</p>
+<p>（原文配有锦标赛示意图：系统通过基于 Elo 的锦标赛迭代排序假设，同时注入新知识以扩展对假设空间的探索。）</p>
+<h2 id="co-scientist">在实验室中验证 Co-Scientist，从生命科学开始</h2>
+<p>在过去一年中，我们与全球专家合作，在生命科学中的复杂问题上评估 Co-Scientist。我们也一直在与包括第一三共（Daiichi Sankyo）、Bayer Crop Science 以及作为 Genesis Mission 一部分的美国国家实验室在内的若干组织预览企业级版本。</p>
+<p>Co-Scientist 帮助加快了 Gary Peltz 对肝纤维化治疗的寻找。该多智能体系统突出了被忽视的药物再利用候选，包括一个在实验室测试中成功阻断 91% 与瘢痕相关反应的候选。发表在 <em>Advanced Science</em> 上的结果，指向治疗慢性肝病的新的基因调控方法。</p>
+<blockquote>
+<p>Co-Scientist 感觉像一个读过关于生物医学科学一切可用内容的合作者，并具有找到我们目前所缺失之联系的推理能力。</p>
+<p>—— 斯坦福大学医学院 Gary Peltz 教授</p>
+<p>科学是团队运动。Co-Scientist 不能独自做科学，我也不能全部靠自己做。它帮助我结构化思考，从而知道该向其他专家和合作者提出什么。</p>
+<p>—— 麻省理工学院 Ritu Raman 副教授</p>
+<p>使用 Co-Scientist 感觉像有一个 50 人的团队供你调遣，在一天内完成所有工作，这是我们实验室以其他方式做不到的。</p>
+<p>—— Omar Abudayyeh，The Abudayyeh–Gootenberg Lab 首席研究员</p>
+</blockquote>
+<p>对 Filippo Menolascina 而言，Co-Scientist 帮助把生物医学文献过载转化为代谢性肝病的高质量假设。系统突出了有前景的疾病机制和药物组合，并帮助解释为什么一种现有药物只使部分患者受益——这一想法随后得到其实验室测试的支持。</p>
+<blockquote>
+<p>Co-Scientist 感觉像科学家的喷气背包，增强我们识别有前景机制的能力。我认为我们正处在一场科学革命的边缘，它将显著缩短实现突破所需的迭代周期。</p>
+<p>—— 爱丁堡大学工程生物学教授 Filippo Menolascina</p>
+</blockquote>
+<p>Clare Bryant 正在使用 Co-Scientist 帮助识别当流感、COVID-19 等病原体从动物跃迁到人类时导致严重疾病的蛋白质。通过与该 AI 系统迭代，她迅速把搜寻缩小到其实验室将测试的特定氨基酸——有可能把数年的实验工作缩短到数月。</p>
+<blockquote>
+<p>Co-Scientist 汇集全部已发表文献和在线资源，帮助我提出更好的问题。它抓住我在数据丰富领域中会错过的东西，并帮助我排优先级，使我的团队能专注于在实验室中回答正确的问题。</p>
+<p>—— 剑桥大学先天免疫学教授 Clare Bryant</p>
+</blockquote>
+<h3 id="_2">开辟衰老研究的新路径</h3>
+<p>在 Calico Life Sciences，Matt Onsum 和 Katherine Labbé 正在使用 Co-Scientist 应对医学最困难的问题之一：衰老的生物学。该 AI 系统以其科学辨别力给 Calico 的专家留下深刻印象，包括生成一个关于整合应激反应的令人兴奋的新颖假设，随后在实验室中得到确认。</p>
+<blockquote>
+<p>我发现使用 Co-Scientist 既令人兴奋又令人惊讶的是，它在多大程度上像科学家一样思考。它与科学家已有的思考和行为方式非常自然地配合。</p>
+<p>—— Calico Life Sciences AI/ML 负责人 Matt Onsum 博士</p>
+</blockquote>
+<h2 id="_3">与科学共同体一起开发智能体工具</h2>
+<p>Co-Scientist 是与来自 100 多个机构的研究者合作开发的，以测试其能力并确保它是科学共同体高质量、有用的工具。</p>
+<p>作为负责任 AI 方法的一部分，Co-Scientist 经历了广泛的内部和外部安全评估。鉴于 Co-Scientist 在生命与物理科学中已展示的熟练程度，我们还对化学、生物、放射和核（CBRN）领域的滥用进行了独立评估。根据这些发现，我们开发了自定义安全分类器，以标记不道德的研究目标，并缓解不安全信息的呈现。</p>
+<p>我们将继续与科学共同体的反馈和协作一起迭代和开发该工具，并兴奋地通过 Gemini for Science 向个别研究者提供 Co-Scientist。我们也期待很快把访问扩展到更多 Google Cloud 企业合作伙伴。</p>
+<p>我们深受那些建立起我们对今日世界之理解的科学家启发。我们希望 AI 能帮助研究者迎来并加速科学进步的新时代。</p>
+<p>说明：Co-Scientist 意在成为研究中的伙伴，而不是科学或临床专长的替代，用户对其使用输出所做的任何决定负责，并继续他们的科学旅程。</p>
+<p>（完整作者与致谢名单见原文。）</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

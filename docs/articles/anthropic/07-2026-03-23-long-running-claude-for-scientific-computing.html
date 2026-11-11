@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面向科学计算的长时运行 Claude · Anthropic</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="sum">
+    <header>
+      <p class="meta-row">
+        <span class="co">Anthropic</span>
+        <time datetime="2026-03-23">2026-03-23</time>
+        <span class="kind sum">中文摘要</span>
+        <span class="cat">编码 Agent</span>
+      </p>
+      <h1>面向科学计算的长时运行 Claude</h1>
+      <p class="en-title">Long-running Claude for scientific computing</p>
+      
+      <p class="orig">原文：<a href="https://www.anthropic.com/research/long-running-claude" target="_blank" rel="noopener">https://www.anthropic.com/research/long-running-claude</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=长时任务">长时任务</a><a class="chip" href="../../index.html?tag=Claude">Claude</a><a class="chip" href="../../index.html?tag=科研 Agent">科研 Agent</a><a class="chip" href="../../index.html?tag=编码 Agent">编码 Agent</a></p>
+    </header>
+    <div class="body"><h1 id="claude">面向科学计算的长时运行 Claude</h1>
+<p>Discovery 团队研究员 Siddharth Mishra-Sharma 说明如何把多日智能体式编程工作流——测试预言机（test oracles）、持久记忆和编排模式——应用到科学计算任务，即使任务不在自己的核心领域内。</p>
+<p>许多科学家仍以紧约束的对话循环使用 AI。随着模型在长周期任务上变强，可以指定高层目标，让一组智能体自主工作，在数小时内完成原本可能需要数天、数周甚至数月的项目。适合的任务通常范围清晰、成功标准明确，例如重实现数值求解器、把旧 Fortran 科学软件迁到现代语言、对照参考实现调试大型代码库。</p>
+<p>文章以用 Claude Opus 4.6 实现可微分宇宙学 Boltzmann 求解器（<a href="https://github.com/smsharma/clax">clax</a>）为例：该数值代码预测宇宙微波背景（CMB）的统计性质。可微分版本可以让梯度穿过完整求解器，从而加速基于梯度的推断；用 JAX 实现可免费获得自动微分和加速器兼容性。作者本人对该领域只有高层熟悉。方法受到 Anthropic C 编译器项目（约 2,000 个 sessions）启发，并面向典型学术实验室给出了用 Claude Code 搭建类似模式的实践建议。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

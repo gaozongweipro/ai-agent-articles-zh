@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-4.5：推理、编程与智能体能力 · 智谱 GLM</title>
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="wrap article-page">
+  <nav class="crumb"><a href="../../index.html">← 返回文库首页</a></nav>
+  <article class="sum">
+    <header>
+      <p class="meta-row">
+        <span class="co">智谱 GLM</span>
+        <time datetime="2025-07-28">2025-07-28</time>
+        <span class="kind sum">中文摘要</span>
+        <span class="cat">模型与发布</span>
+      </p>
+      <h1>GLM-4.5：推理、编程与智能体能力</h1>
+      <p class="en-title">GLM-4.5: Reasoning, Coding, and Agentic Abilities</p>
+      
+      <p class="orig">原文：<a href="https://z.ai/blog/glm-4.5" target="_blank" rel="noopener">https://z.ai/blog/glm-4.5</a></p>
+      <p class="chips"><a class="chip" href="../../index.html?tag=工具调用">工具调用</a><a class="chip" href="../../index.html?tag=编码 Agent">编码 Agent</a><a class="chip" href="../../index.html?tag=thinking">thinking</a><a class="chip" href="../../index.html?tag=评测">评测</a><a class="chip" href="../../index.html?tag=模型发布">模型发布</a></p>
+    </header>
+    <div class="body"><h1 id="glm-45">GLM-4.5：推理、编程与智能体能力</h1>
+<p>智谱于 2025 年 7 月 28 日发布 GLM-4.5（355B/32B 激活）与 GLM-4.5-Air（106B/12B 激活），目标是把推理、编程与智能体能力统一到同一模型中，以满足快速增长的 agentic 应用。二者均为混合推理模型：thinking 模式用于复杂推理与工具使用，non-thinking 模式用于即时回复；原生支持函数调用，上下文 128K。</p>
+<p>在智能体评测上，官方报告 GLM-4.5 在 τ-bench 与 BFCL-v3 上接近 Claude 4 Sonnet；在 BrowseComp 上网页浏览正确率为 26.4%。编程方面，SWE-bench Verified 为 64.2%，并强调可与 Claude Code 等编码工具链配合；在 52 项人机交互编码任务中，工具调用成功率报 90.6%。后训练除推理 RL 外，特别增强了 agentic coding、深度搜索与通用工具使用，并开源面向大规模 RL 的 slime 基础设施（支持异步、解耦 rollout，便于长时程智能体任务）。模型可在 Z.ai 与 API 使用，权重在 Hugging Face / ModelScope 开放。详细数字、演示与用户模拟器提示词见原文。</p></div>
+  </article>
+  <footer class="site">原文版权归相应公司所有。中文翻译与摘要仅供个人学习，请以官方原文为准。</footer>
+</div>
+<script src="../../theme.js"></script>
+</body>
+</html>

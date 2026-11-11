@@ -1,0 +1,86 @@
+---
+title_en: "Introducing AgentKit, new Evals, and RFT for agents"
+title_zh: 介绍 AgentKit、新的 Evals 以及面向智能体的强化微调
+company: openai
+date: 2025-10-06
+updated: 2026-06-03
+url: https://openai.com/index/introducing-agentkit/
+type: full
+category: 框架与 SDK
+tags:
+  - Agents SDK
+  - 评测
+  - Guardrails
+  - MCP
+  - 多 Agent
+---
+
+# 介绍 AgentKit、新的 Evals 以及面向智能体的强化微调
+
+2026 年 6 月 3 日更新：OpenAI 正在逐步停用 Agent Builder 与 Evals 产品。自 2026 年 11 月 30 日起，它们将不再在 OpenAI 平台上提供。对于应以代码继续的工作流，我们建议使用 Agents SDK。对于更适合自然语言提示的用例，我们建议使用 ChatGPT 中的 Workspace Agents。
+
+今天我们推出 AgentKit，这是一套完整的工具，帮助开发者与企业构建、部署和优化智能体。此前，构建智能体意味着在碎片化工具之间切换——没有版本管理的复杂编排、定制连接器、手工评估流水线、提示调优，以及上线前数周的前端工作。有了 AgentKit，开发者现在可以可视化地设计工作流，并使用如下新的构建块更快地嵌入智能体 UI：
+
+- Agent Builder：用于创建和版本化多智能体工作流的可视化画布
+- Connector Registry：供管理员集中管理数据和工具如何在 OpenAI 产品中连接
+- ChatKit：用于在产品中嵌入可定制的、基于聊天的智能体体验的工具包
+
+我们还在扩展评估能力，新增数据集、轨迹评分（trace grading）、自动提示优化，以及对第三方模型的支持，以衡量并改进智能体表现。
+
+自从 3 月发布 Responses API 与 Agents SDK 以来，我们看到开发者与企业构建端到端的智能体工作流，用于深度研究、客户支持等。Klarna 构建的支持智能体处理了三分之二的工单，Clay 借助销售智能体实现了 10 倍增长。AgentKit 建立在 Responses API 之上，帮助开发者更高效、更可靠地构建智能体。
+
+## 用 Agent Builder 设计工作流
+
+随着智能体工作流日益复杂，开发者需要更清楚地看到它们如何运作。Agent Builder 提供可视化画布，用拖放节点组合逻辑、连接工具并配置自定义 guardrails。它支持预览运行、内联评估配置和完整版本管理——适合快速迭代。
+
+构建者可以从空白画布或预置模板开始。
+
+在 Ramp，团队在短短几小时内从空白画布做出了一个采购智能体：
+
+> Agent Builder 把曾经需要数月复杂编排、定制代码和手工优化的工作，变成了只需要几个小时。可视化画布让产品、法务和工程站在同一页上，把迭代周期缩短了 70%，让智能体在两个 sprint 而非两个季度内上线。
+>
+> —— Ramp
+
+同样，日本领先的科技与互联网服务公司 LY Corporation 用 Agent Builder 在不到两小时内构建了工作助手智能体。
+
+> Agent Builder 让我们能以全新方式编排智能体，工程师与领域专家在同一界面中协作。我们构建了第一个多智能体工作流并在不到两小时内运行起来，极大加快了创建和部署智能体的速度。
+>
+> —— LY Corporation
+
+我们还推出 Connector Registry，供企业在多个工作区与组织中治理和维护数据。它把数据源汇总到跨 ChatGPT 与 API 的单一管理面板，包括 Dropbox、Google Drive、SharePoint、Microsoft Teams 等预构建连接器，以及第三方 MCP。
+
+开发者还可以在 Agent Builder 中启用 Guardrails——一个开源、模块化的安全层，帮助保护智能体免受非预期或恶意行为。Guardrails 可以遮蔽或标记 PII、检测 jailbreak，并应用其他防护，从而更容易构建和部署可靠、安全的智能体。它可以单独部署，或通过 Python 与 JavaScript 的 guardrails 库使用。
+
+## 用 ChatKit 嵌入智能体聊天体验
+
+为智能体部署聊天 UI 可能出人意料地复杂——处理流式响应、管理线程、展示模型思考，并设计有吸引力的对话内体验。ChatKit 让在产品中嵌入感觉原生的基于聊天的智能体变得简单。它可以嵌入应用或网站，并定制以匹配你的主题或品牌。
+
+ChatKit 已经支撑从内部知识助手、入职指南到客户支持与研究智能体的多种用例。HubSpot 的客户支持智能体就是一例。
+
+## 用新的 Evals 能力衡量智能体表现
+
+构建可靠、可投产的智能体需要严格的性能评估。去年我们推出 Evals，帮助开发者测试提示并衡量模型行为。现在我们新增四项能力，使构建评估更加容易：
+
+- 数据集——从零快速构建智能体评估，并通过自动评分器与人工标注随时间扩展。
+- 轨迹评分（Trace grading）——对智能体工作流进行端到端评估，并自动评分以定位不足。
+- 自动提示优化——根据人工标注和评分器输出生成改进后的提示。
+- 第三方模型支持——在 OpenAI Evals 平台内评估其他提供商的模型。
+
+我们已经看到客户通过使用 Evals 获得显著的性能提升。
+
+## 用强化微调推动智能体表现
+
+强化微调（RFT）让开发者可以定制我们的推理模型。它在 OpenAI o4-mini 上已正式可用，并在 GPT-5 上处于私有测试。我们正与数十位客户密切合作，在更广泛发布前完善面向 GPT-5 的 RFT。
+
+今天，我们在该 RFT 测试中引入两项新功能，以进一步推动智能体表现：
+
+- 自定义工具调用——训练模型在正确的时机调用正确的工具，以获得更好的推理
+- 自定义评分器——为你最关心的标准设定自定义评估准则
+
+## 定价与可用性
+
+即日起，ChatKit 与新的 Evals 能力对所有开发者正式可用。Agent Builder 处于测试，Connector Registry 开始向部分拥有 Global Admin Console 的 API、ChatGPT Enterprise 和 Edu 客户推出（Global Owners 可管理域名、SSO、多个 API 组织）。启用 Connector Registry 的前提是 Global Admin Console。这些工具都包含在标准 API 模型定价中。
+
+我们计划很快增加独立的 Workflows API，以及向 ChatGPT 部署智能体的选项。
+
+我们迫不及待想看到你的构建。
