@@ -251,7 +251,7 @@ def write_readme(arts: list[dict]) -> None:
     lines.append("")
     lines.append("如需引用或核对，一律以各公司官方页面为准。")
     lines.append("")
-    lines.append("仓库名称仍为历史沿用的 `ai-agent-articles-zh`；内容已扩展为多公司文库。若需更名，可考虑 `ai-agent-articles-zh` 或 `agent-dev-articles-zh`（需仓库所有者另行决定，本构建脚本不会改名或改可见性）。")
+    lines.append("本仓库原名 `anthropic-agent-articles-zh`，内容扩展为多公司文库后更名为 `ai-agent-articles-zh`。")
     lines.append("")
     README.write_text("\n".join(lines), encoding="utf-8")
 
