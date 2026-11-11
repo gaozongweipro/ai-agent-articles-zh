@@ -1,0 +1,170 @@
+# 用 Claude Agent SDK 构建智能体
+
+- 英文标题：Building agents with the Claude Agent SDK
+- 中文标题：用 Claude Agent SDK 构建智能体
+- 发布日期：2025-09-29
+- 原文链接：https://claude.com/resources/articles/building-agents-with-the-claude-agent-sdk
+- 翻译类型：全文翻译
+
+---
+
+Claude Agent SDK 是一套工具集合，帮助开发者在 Claude Code 的基础上构建强大的智能体。本文将介绍如何入门，并分享我们的最佳实践。
+
+去年，我们与客户一起分享了[构建有效智能体](https://www.anthropic.com/engineering/building-effective-agents)的经验。此后，我们发布了 [Claude Code](https://claude.com/product/claude-code)，这是一个智能体式编程方案，最初是为支持 Anthropic 内部的开发者生产力而构建的。
+
+在过去几个月里，Claude Code 已远远不止是一个编程工具。在 Anthropic，我们一直在[用它](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)做深度研究、视频创作和笔记等无数非编程应用。事实上，它已开始支撑我们几乎所有主要的智能体循环。
+
+换句话说，[驱动 Claude Code 的智能体 harness](https://claude.com/resources/articles/harnessing-claudes-intelligence)（Claude Code SDK）也可以驱动许多其他类型的智能体。为反映这一更广阔的愿景，我们将 Claude Code SDK 更名为 Claude Agent SDK。
+
+本文将说明我们为何构建 Claude Agent SDK、如何用它构建你自己的智能体，并分享我们团队在自身部署中沉淀出的最佳实践。
+
+## 给 Claude 一台计算机
+
+Claude Code 背后的[关键设计原则](https://www.youtube.com/watch?v=vLIDHi-1PVU)是：Claude 需要与程序员每天使用的相同工具。它需要能在代码库中找到合适的文件、编写和编辑文件、对代码做 lint、运行它、调试、再编辑，有时还要迭代这些动作直到代码成功。
+
+我们发现，通过（经由终端）让 Claude 访问用户的计算机，它就具备了像程序员一样写代码所需的条件。
+
+但这也使 Claude Code 中的 Claude 在*非*编程任务上同样有效。通过给它运行 bash 命令、编辑文件、创建文件和搜索文件的工具，Claude 可以读取 CSV 文件、搜索网页、构建可视化、解释指标，并完成各种其他数字工作——简而言之，用一台计算机创建通用智能体。Claude Agent SDK 背后的关键设计原则，就是给你的智能体一台计算机，让它们能像人类一样工作。
+
+## 创建新类型的智能体
+
+我们相信，给 Claude 一台计算机，解锁了构建比以往更有效的智能体的能力。例如，使用我们的 SDK，开发者可以构建：
+
+- **金融智能体**：构建能理解你的投资组合和目标的智能体，并通过访问外部 API、存储数据和运行代码进行计算，帮助你评估投资。
+- **个人助理智能体**：构建能帮助你预订旅行、管理日历、安排约会、整理简报等的智能体，方法是连接到你的内部数据源，并跨应用跟踪 context。
+- **客户支持智能体**：构建能处理高度模糊的用户请求（例如客服工单）的智能体，方法是收集和审阅用户数据、连接外部 API、回复用户，并在需要时升级给人类。
+- **深度研究智能体**：构建能在大型文档集合中开展综合研究的智能体，方法是在文件系统中搜索、分析和综合多个来源的信息、跨文件交叉引用数据，并生成详细报告。
+
+还有更多。从本质上说，SDK 为你提供了为任何想要自动化的工作流构建智能体所需的原语。
+
+## 构建你的智能体循环
+
+在 Claude Code 中，Claude 通常在一个特定的反馈循环中运作：收集 context -> 采取行动 -> [验证工作](https://claude.com/resources/articles/building-verification-loops-in-claude-code-with-skills) -> 重复。
+
+（原文配图：智能体反馈循环。）
+
+智能体通常在一个特定的反馈循环中运作：收集 context -> 采取行动 -> 验证工作 -> 重复。
+
+这为思考其他智能体、以及它们应被赋予的能力，提供了一种有用的方式。为说明这一点，我们将以在 Claude Agent SDK 中构建一个电子邮件智能体为例。
+
+## 收集 context
+
+在开发智能体时，你希望给它的不仅是一个 prompt：它需要能够自行获取和更新自己的 context。下面是 SDK 中的功能如何提供帮助。
+
+### **智能体式搜索与文件系统**
+
+文件系统代表的是*可以被*拉进模型 context 的信息。
+
+当 Claude 遇到大文件（例如日志或用户上传的文件）时，它会决定用何种方式将这些内容加载进 context，例如使用 `grep` 和 `tail` 等 bash 脚本。本质上，智能体的文件夹和文件结构成为一种 [context engineering](http://anthropic.com/news/context-management)。
+
+我们的电子邮件智能体可能会把以往的对话存储在名为 “Conversations” 的文件夹中。这样，当被问及相关内容时，它就可以在这些记录中搜索以获取 context。
+
+### **语义搜索（Semantic search）**
+
+[语义搜索](https://www.anthropic.com/news/contextual-retrieval)通常比智能体式搜索更快，但准确性更低、更难维护，也更不透明。它涉及将相关 context “分块（chunking）”，将这些块嵌入为向量，然后通过查询这些向量来搜索概念。鉴于其局限性，我们建议从智能体式搜索开始，只有在你需要更快的结果或更多变体时，再加入语义搜索。
+
+### **Subagents（子智能体）**
+
+Claude Agent SDK 默认支持 subagents。[Subagents](https://docs.claude.com/en/api/agent-sdk/subagents) 主要有两个用处。第一，它们实现并行化：你可以同时启动多个 subagents 处理不同任务。第二，它们帮助管理 context：subagents 使用自己的[隔离 context windows](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop)，只把相关信息送回编排器，而不是完整 context。这使它们非常适合需要筛选大量信息、而其中大部分并不有用的任务。
+
+在设计电子邮件智能体时，我们可以给它 “search subagent” 能力。电子邮件智能体随后可以并行派生多个搜索 subagents——各自对你的邮件历史运行不同查询——并只返回相关摘录，而不是完整邮件线程。
+
+### **Compaction（压缩）**
+
+当智能体长时间运行时，context 维护变得至关重要。Claude Agent SDK 的 compact 功能会在接近 context 上限时自动总结先前的消息，使你的智能体不会耗尽 context。这建立在 Claude Code 的 [compact slash command](https://docs.claude.com/en/docs/claude-code/sdk/sdk-slash-commands#%2Fcompact-compact-conversation-history) 之上。
+
+## 采取行动
+
+一旦收集了 context，你就会希望给你的智能体灵活的行动方式。
+
+### **工具（Tools）**
+
+[工具](https://www.anthropic.com/engineering/writing-tools-for-agents)是智能体执行的主要构建块。工具在 Claude 的 context window 中非常醒目，使它们成为 Claude 在决定如何完成任务时首先考虑的主要动作。这意味着你应当有意识地设计工具，以最大化 context 效率。更多最佳实践见我们的博文 [Writing effective tools for agents – with agents](https://www.anthropic.com/engineering/writing-tools-for-agents)。
+
+因此，你的工具应当是你希望智能体采取的主要动作。了解如何在 Claude Agent SDK 中制作 [custom tools](https://docs.claude.com/en/api/agent-sdk/custom-tools)。
+
+对于电子邮件智能体，我们可以定义像 “`fetchInbox`” 或 “`searchEmails`” 这样的工具，作为智能体最主要、最常用的动作。
+
+### **Bash 与脚本**
+
+Bash 作为通用工具很有用，能让智能体用一台计算机做灵活的工作。
+
+在电子邮件智能体中，用户可能在附件中存储了重要信息。Claude 可以写代码下载 PDF、转换成文本，并在其中搜索有用信息，如下所示。
+
+### **代码生成**
+
+Claude Agent SDK 擅长代码生成——这是有充分理由的。代码精确、可组合、且可无限复用，使其成为需要可靠执行复杂操作的智能体的理想输出。
+
+在构建智能体时，请思考：哪些任务适合用代码来表达？答案往往能解锁重要能力。
+
+例如，我们最近在 [Claude.AI](http://claude.ai) 推出的 [文件创建](https://www.anthropic.com/news/create-files) 功能完全依赖代码生成。Claude 编写 Python 脚本来创建 Excel 电子表格、PowerPoint 演示文稿和 Word 文档，从而确保一致的格式和复杂功能——这用其他方式很难实现。
+
+在电子邮件智能体中，我们可能希望允许用户为入站邮件创建规则。为此，我们可以编写在该事件上运行的代码。
+
+### **MCP**
+
+[Model Context Protocol](https://modelcontextprotocol.io/)（MCP）提供与外部服务的标准化集成，自动处理认证和 API 调用。这意味着你可以将智能体连接到 Slack、GitHub、Google Drive 或 Asana 等工具，而无需自己编写定制集成代码或管理 OAuth 流程。
+
+对于电子邮件智能体，我们可能希望 `search Slack messages` 以理解团队 context，或 `check Asana tasks` 以查看是否已有人被指派处理某项客户请求。借助 MCP servers，这些集成开箱即用——你的智能体只需调用像 search_slack_messages 或 get_asana_tasks 这样的工具，MCP 会处理其余部分。
+
+不断增长的 [MCP 生态](https://github.com/modelcontextprotocol/servers)意味着，随着预构建集成的出现，你可以迅速为智能体添加新能力，从而把精力集中在智能体行为上。
+
+## 验证你的工作
+
+Claude Code SDK 通过评估自己的工作来完成智能体循环。能够检查并改进自身输出的智能体从根本上更可靠——它们在错误累积之前就抓住错误，在偏离时自我纠正，并随着迭代变得更好。
+
+关键是给 Claude 具体的方式来评估自己的工作。以下是我们发现有效的三种方法：
+
+### **定义规则**
+
+最好的反馈形式，是为输出提供明确定义的规则，然后解释哪些规则失败了以及为什么。
+
+[代码 linting](https://stackoverflow.com/questions/8503559/what-is-linting) 是一种出色的基于规则的反馈。反馈越深入越好。例如，通常生成 TypeScript 并对其做 lint，要好于生成纯 JavaScript，因为它提供了多层额外反馈。
+
+在生成电子邮件时，你可能希望 Claude 检查邮箱地址是否有效（若无效则抛出错误），以及用户以前是否给对方发过邮件（若发过则抛出警告）。
+
+### **视觉反馈**
+
+当使用智能体完成视觉任务（例如 UI 生成或测试）时，视觉反馈（截图或渲染的形式）会有帮助。例如，如果发送带 HTML 格式的电子邮件，你可以截取生成的邮件并提供给模型，供其做视觉验证和迭代改进。模型随后会检查视觉输出是否与所请求的内容相符。
+
+例如：
+
+- **布局（Layout）** - 元素位置是否正确？间距是否合适？
+- **样式（Styling）** - 颜色、字体和格式是否按预期呈现？
+- **内容层次（Content hierarchy）** - 信息是否以正确顺序呈现，并有适当的强调？
+- **响应式（Responsiveness）** - 看起来是否损坏或过于局促？（不过单张截图的视口信息有限）
+
+使用像 Playwright 这样的 MCP server，你可以自动化这一视觉反馈循环——对渲染后的 HTML 截图、捕获不同视口尺寸，甚至测试交互元素——全部都在智能体的工作流中完成。
+
+（原文配图：Claude 对智能体生成的电子邮件正文提供视觉反馈。）
+
+来自大语言模型（LLM）的视觉反馈可以为你的智能体提供有用指导。
+
+### **LLM as a judge（用 LLM 做评判）**
+
+你也可以让另一个语言模型基于模糊规则来 “评判” 你的智能体的输出。这通常不是一种非常稳健的方法，并且可能有严重的延迟权衡，但在任何表现提升都值得付出成本的应用中，它可能会有帮助。
+
+我们的电子邮件智能体可能有一个独立的 subagent 来评判其草稿的语气，看它们是否与用户以往的消息风格相符。
+
+## 测试并改进你的智能体
+
+在你多次走完智能体循环之后，我们建议测试你的智能体，并确保它为任务配备充足。改进智能体的最好方法，是仔细查看它的输出，尤其是失败的案例，并设身处地为它着想：它是否拥有胜任工作的[正确工具](https://www.anthropic.com/engineering/writing-tools-for-agents)？
+
+在评估智能体是否胜任其工作时，还可以问自己这些问题：
+
+- 如果智能体误解了任务，它可能缺少关键信息。你能否改变搜索 API 的结构，使它更容易找到需要知道的内容？
+- 如果智能体反复在某项任务上失败，你能否在工具调用中加入一条正式规则来识别并修复失败？
+- 如果智能体无法修复自己的错误，你能否给它更有用或更有创造性的工具，以不同方式处理问题？
+- 如果你在添加功能时智能体表现不稳定，请基于客户使用情况构建一个有代表性的测试集，用于程序性评估（或 evals）。
+
+## 如何开始
+
+Claude Agent SDK 通过让 Claude 访问一台可以写文件、运行命令并迭代其工作的计算机，使构建自主智能体变得更容易。
+
+以智能体循环为指引（收集 context、采取行动、验证工作），你可以构建可靠、易于部署和迭代的智能体。
+
+你今天就可以[开始使用](https://docs.claude.com/en/api/agent-sdk/overview) Claude Agent SDK。对于已经在 SDK 上构建的开发者，我们建议按照[本指南](https://docs.claude.com/en/docs/claude-code/sdk/migration-guide)迁移到最新版本。
+
+## 作者与致谢
+
+由 Thariq Shihipar 撰写，Molly Vorwerck、Suzanne Wang、Alex Isken、Cat Wu、Keir Bradwell、Alexander Bricken 和 Ashwin Bhat 提供笔记与编辑。
